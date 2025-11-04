@@ -1,6 +1,6 @@
 # Versatile POS — .NET Starter
 
-This is a minimal .NET 8 Web API starter so your team can clone/pull and begin coding immediately.
+This is a minimal .NET 8 Web API starter to clone/pull and begin coding immediately.
 
 ## What's inside
 - `src/Pos.Api` — ASP.NET Core minimal API with Swagger and a `/health` endpoint.
