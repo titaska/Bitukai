@@ -30,7 +30,6 @@
     <Folder Include="taxes\controller\" />
     <Folder Include="taxes\dto\" />
     <Folder Include="taxes\exception\" />
-    <Folder Include="taxes\model\" />
     <Folder Include="taxes\repository\" />
     <Folder Include="taxes\service\" />
   </ItemGroup>
