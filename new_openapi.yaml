@@ -1,0 +1,2621 @@
+openapi: 3.0.3
+info:
+  title: Versatile Point of Sale (POS) API
+  description: |
+    A unified POS system for small businesses including restaurants, beauty salons, and retail.
+    Supports order management, reservations, payments, inventory, and customer loyalty.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@pos-system.com
+
+servers:
+  - url: https://api.pos-system.com/v1
+    description: Production server
+  - url: https://staging-api.pos-system.com/v1
+    description: Staging server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Businesses
+    description: Business/merchant management
+  - name: Staff
+    description: Staff and employee management
+  - name: Customers
+    description: Customer management and loyalty
+  - name: Products
+    description: Product catalog (items and services)
+  - name: Orders
+    description: Order lifecycle management
+  - name: Payments
+    description: Payment processing and refunds
+  - name: Reservations
+    description: Appointment and reservation management
+  - name: Taxes
+    description: Tax configuration and service charges
+  - name: Discounts
+    description: Discount management
+  - name: Inventory
+    description: Inventory tracking and adjustments
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Staff login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT access token
+                  refreshToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                  staff:
+                    $ref: '#/components/schemas/Staff'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expiresIn:
+                    type: integer
+
+  /businesses:
+    get:
+      tags: [Businesses]
+      summary: List businesses (SuperAdmin only)
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of businesses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Business'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Businesses]
+      summary: Create a new business (SuperAdmin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessCreate'
+      responses:
+        '201':
+          description: Business created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /businesses/{registrationNumber}:
+    get:
+      tags: [Businesses]
+      summary: Get business details
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Business details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags: [Businesses]
+      summary: Update business information (Owner or SuperAdmin)
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessUpdate'
+      responses:
+        '200':
+          description: Business updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /staff:
+    get:
+      tags: [Staff]
+      summary: List staff members
+      parameters:
+        - name: businessId
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [STAFF, OWNER, SUPERADMIN]
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of staff
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Staff'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Staff]
+      summary: Create new staff member (Owner or SuperAdmin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffCreate'
+      responses:
+        '201':
+          description: Staff created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+
+  /staff/{staffId}:
+    get:
+      tags: [Staff]
+      summary: Get staff member details
+      parameters:
+        - name: staffId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Staff details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+    
+    put:
+      tags: [Staff]
+      summary: Update staff member
+      parameters:
+        - name: staffId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUpdate'
+      responses:
+        '200':
+          description: Staff updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+    
+    delete:
+      tags: [Staff]
+      summary: Delete staff member (Owner or SuperAdmin)
+      parameters:
+        - name: staffId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Staff deleted
+
+  /customers:
+    get:
+      tags: [Customers]
+      summary: List customers
+      parameters:
+        - name: search
+          in: query
+          description: Search by name, phone, or email
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Customers]
+      summary: Create new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreate'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /customers/{customerId}:
+    get:
+      tags: [Customers]
+      summary: Get customer details
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    
+    put:
+      tags: [Customers]
+      summary: Update customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdate'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+  /customers/{customerId}/loyalty:
+    get:
+      tags: [Customers]
+      summary: Get customer loyalty points
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Loyalty information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customerId:
+                    type: string
+                    format: uuid
+                  points:
+                    type: integer
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                        points:
+                          type: integer
+                        reason:
+                          type: string
+                        orderId:
+                          type: string
+                          format: uuid
+
+  /products:
+    get:
+      tags: [Products]
+      summary: List products (items and services)
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [ITEM, SERVICE]
+        - name: active
+          in: query
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Products]
+      summary: Create new product (Owner or Manager)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product details
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    
+    put:
+      tags: [Products]
+      summary: Update product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    
+    delete:
+      tags: [Products]
+      summary: Deactivate product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product deactivated
+
+  /products/{productId}/staff:
+    get:
+      tags: [Products]
+      summary: List staff eligible for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of eligible staff
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductStaff'
+    post:
+      tags: [Products]
+      summary: Link staff to a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductStaffCreate'
+      responses:
+        '201':
+          description: Staff linked to product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductStaff'
+
+  /products/{productId}/staff/{staffId}:
+    put:
+      tags: [Products]
+      summary: Update product-staff link
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: staffId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductStaffUpdate'
+      responses:
+        '200':
+          description: Product-staff link updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductStaff'
+    delete:
+      tags: [Products]
+      summary: Unlink staff from a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: staffId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Staff unlinked from product
+
+  /products/{productId}/variations:
+    get:
+      tags: [Products]
+      summary: Get product variation groups
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Variation groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductVariationGroup'
+    
+    post:
+      tags: [Products]
+      summary: Add variation group to product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVariationGroupCreate'
+      responses:
+        '201':
+          description: Variation group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVariationGroup'
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: List orders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, CLOSED_PAID, CANCELLED, REFUNDED, PARTIALLY_REFUNDED]
+        - name: customerId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Orders]
+      summary: Create new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order details
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+    
+    put:
+      tags: [Orders]
+      summary: Update order (only if status is OPEN)
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Cannot update closed order
+
+  /orders/{orderId}/lines:
+    post:
+      tags: [Orders]
+      summary: Add line item to order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderLineCreate'
+      responses:
+        '201':
+          description: Order line added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderLine'
+
+  /orders/{orderId}/lines/{lineId}:
+    put:
+      tags: [Orders]
+      summary: Update order line
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: lineId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderLineUpdate'
+      responses:
+        '200':
+          description: Order line updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderLine'
+    
+    delete:
+      tags: [Orders]
+      summary: Remove order line
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: lineId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Order line removed
+
+  /orders/{orderId}/discounts:
+    post:
+      tags: [Orders]
+      summary: Apply discount to order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDiscountCreate'
+      responses:
+        '201':
+          description: Discount applied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}/tip:
+    put:
+      tags: [Orders]
+      summary: Update tip amount
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tipAmount]
+              properties:
+                tipAmount:
+                  type: number
+                  format: decimal
+                  minimum: 0
+      responses:
+        '200':
+          description: Tip updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /orders/{orderId}/close:
+    post:
+      tags: [Orders]
+      summary: Close order and snapshot totals
+      description: |
+        Finalizes the order, calculates all totals, taxes, discounts, and service charges.
+        After closing, the order becomes immutable for historical accuracy.
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Order cannot be closed (e.g., no items, already closed)
+
+  /orders/{orderId}/payments:
+    get:
+      tags: [Payments]
+      summary: Get payments for order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+    
+    post:
+      tags: [Payments]
+      summary: Process payment (supports split payments)
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+      responses:
+        '201':
+          description: Payment processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: Payment failed or order not ready for payment
+
+  /payments/{paymentId}:
+    get:
+      tags: [Payments]
+      summary: Get payment details
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /payment-methods:
+    get:
+      tags: [Payments]
+      summary: List available payment methods
+      responses:
+        '200':
+          description: List of payment methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethod'
+
+  /orders/{orderId}/refunds:
+    get:
+      tags: [Payments]
+      summary: Get refunds for order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of refunds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Refund'
+    
+    post:
+      tags: [Payments]
+      summary: Issue refund (full or partial)
+      description: Requires manager authorization
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundCreate'
+      responses:
+        '201':
+          description: Refund processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+        '403':
+          description: Insufficient permissions
+
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: List reservations
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [BOOKED, CANCELLED, COMPLETED, NO_SHOW]
+        - name: employeeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of reservations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reservation'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Reservations]
+      summary: Create reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+      responses:
+        '201':
+          description: Reservation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+
+  /reservations/{appointmentId}:
+    get:
+      tags: [Reservations]
+      summary: Get reservation details
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Reservation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+    
+    put:
+      tags: [Reservations]
+      summary: Update reservation
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationUpdate'
+      responses:
+        '200':
+          description: Reservation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+    
+    delete:
+      tags: [Reservations]
+      summary: Cancel reservation
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Reservation cancelled
+
+  /reservations/availability:
+    get:
+      tags: [Reservations]
+      summary: Check staff availability for service
+      parameters:
+        - name: serviceProductId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: employeeId
+          in: query
+          description: Optional - check specific employee
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Available time slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    employeeId:
+                      type: string
+                      format: uuid
+                    employeeName:
+                      type: string
+                    availableSlots:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          startTime:
+                            type: string
+                            format: date-time
+                          endTime:
+                            type: string
+                            format: date-time
+
+  /tax-codes:
+    get:
+      tags: [Taxes]
+      summary: List tax codes
+      parameters:
+        - name: active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of tax codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaxCode'
+    
+    post:
+      tags: [Taxes]
+      summary: Create tax code (Owner or SuperAdmin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxCodeCreate'
+      responses:
+        '201':
+          description: Tax code created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxCode'
+
+  /service-charges:
+    get:
+      tags: [Taxes]
+      summary: Get service charge configuration
+      responses:
+        '200':
+          description: Service charge config
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceChargeConfig'
+    
+    post:
+      tags: [Taxes]
+      summary: Create service charge configuration (Owner or SuperAdmin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceChargeConfigCreate'
+      responses:
+        '201':
+          description: Service charge configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceChargeConfig'
+
+  /discounts:
+    get:
+      tags: [Discounts]
+      summary: List discounts
+      parameters:
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [ITEM, SERVICE, ORDER]
+        - name: active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of discounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+    
+    post:
+      tags: [Discounts]
+      summary: Create discount (Owner or Manager)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscountCreate'
+      responses:
+        '201':
+          description: Discount created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+
+  /discounts/{discountId}:
+    get:
+      tags: [Discounts]
+      summary: Get discount details
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Discount details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+    
+    put:
+      tags: [Discounts]
+      summary: Update discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscountUpdate'
+      responses:
+        '200':
+          description: Discount updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+
+  /inventory:
+    get:
+      tags: [Inventory]
+      summary: List inventory items
+      parameters:
+        - name: lowStock
+          in: query
+          description: Filter items below reorder threshold
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of inventory items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryItem'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /inventory/{inventoryId}:
+    get:
+      tags: [Inventory]
+      summary: Get inventory item details
+      parameters:
+        - name: inventoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Inventory details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+
+  /inventory/{inventoryId}/adjustments:
+    get:
+      tags: [Inventory]
+      summary: Get inventory adjustment history
+      parameters:
+        - name: inventoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Adjustment history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryAdjustment'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    
+    post:
+      tags: [Inventory]
+      summary: Create inventory adjustment
+      parameters:
+        - name: inventoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryAdjustmentCreate'
+      responses:
+        '201':
+          description: Adjustment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryAdjustment'
+
+  /businesses/{registrationNumber}/staff:
+    get:
+      tags: [Staff]
+      summary: List staff for a business
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of staff
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Staff'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    Business:
+      type: object
+      properties:
+        registrationNumber:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        vatCode:
+          type: string
+          nullable: true
+        currencyCode:
+          type: string
+          example: USD
+
+    BusinessCreate:
+      type: object
+      required: [registrationNumber, name, location, currencyCode]
+      properties:
+        registrationNumber:
+          type: string
+        name:
+          type: string
+        location:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        vatCode:
+          type: string
+        currencyCode:
+          type: string
+
+    BusinessUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        vatCode:
+          type: string
+
+    Staff:
+      type: object
+      properties:
+        staffId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        role:
+          type: string
+          enum: [STAFF, OWNER, SUPERADMIN]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        hireDate:
+          type: string
+          format: date
+
+    StaffCreate:
+      type: object
+      required: [registrationNumber, firstName, lastName, email, password, role]
+      properties:
+        registrationNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        password:
+          type: string
+          format: password
+        role:
+          type: string
+          enum: [STAFF, OWNER, SUPERADMIN]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+          default: ACTIVE
+        hireDate:
+          type: string
+          format: date
+
+    StaffUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        role:
+          type: string
+          enum: [STAFF, OWNER, SUPERADMIN]
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthday:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        points:
+          type: integer
+          default: 0
+
+    CustomerCreate:
+      type: object
+      required: [firstName, lastName]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthday:
+          type: string
+          format: date
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+
+    CustomerUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthday:
+          type: string
+          format: date
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+
+    Product:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        type:
+          type: string
+          enum: [ITEM, SERVICE]
+        name:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+          format: decimal
+        durationMinutes:
+          type: integer
+          description: Duration of the service in minutes.
+          nullable: true
+        taxCode:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        active:
+          type: boolean
+        variationGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariationGroup'
+
+    ProductCreate:
+      type: object
+      required: [registrationNumber, type, name, basePrice, taxCode]
+      properties:
+        registrationNumber:
+          type: string
+        type:
+          type: string
+          enum: [ITEM, SERVICE]
+        name:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+          format: decimal
+        durationMinutes:
+          type: integer
+          description: Duration of the service in minutes.
+        taxCode:
+          type: string
+        active:
+          type: boolean
+          default: true
+
+    ProductUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+          format: decimal
+        durationMinutes:
+          type: integer
+          description: Duration of the service in minutes.
+        taxCode:
+          type: string
+        active:
+          type: boolean
+
+    ProductVariationGroup:
+      type: object
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Milk
+        selectionType:
+          type: string
+          enum: [SINGLE, MULTI]
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariationOption'
+
+    ProductVariationGroupCreate:
+      type: object
+      required: [name, selectionType]
+      properties:
+        name:
+          type: string
+        selectionType:
+          type: string
+          enum: [SINGLE, MULTI]
+        options:
+          type: array
+          items:
+            type: object
+            required: [value, priceDelta]
+            properties:
+              value:
+                type: string
+              priceDelta:
+                type: number
+                format: decimal
+
+    ProductVariationOption:
+      type: object
+      properties:
+        optionId:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        value:
+          type: string
+          example: Oat
+        priceDelta:
+          type: number
+          format: decimal
+
+    ProductStaff:
+      type: object
+      properties:
+        productStaffId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        staffId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        validFrom:
+          type: string
+          format: date-time
+          nullable: true
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+
+    ProductStaffCreate:
+      type: object
+      required: [staffId]
+      properties:
+        staffId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+          default: ACTIVE
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+
+    ProductStaffUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        validFrom:
+          type: string
+          format: date-time
+          nullable: true
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum: [OPEN, CLOSED_PAID, CANCELLED, REFUNDED, PARTIALLY_REFUNDED]
+        createdAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+        serviceChargePct:
+          type: number
+          format: decimal
+          nullable: true
+        tipAmount:
+          type: number
+          format: decimal
+          nullable: true
+        subtotalAmount:
+          type: number
+          format: decimal
+          nullable: true
+        taxAmount:
+          type: number
+          format: decimal
+          nullable: true
+        discountAmount:
+          type: number
+          format: decimal
+          nullable: true
+        serviceChargeAmount:
+          type: number
+          format: decimal
+          nullable: true
+        totalDue:
+          type: number
+          format: decimal
+          nullable: true
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLine'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+
+    OrderCreate:
+      type: object
+      required: [registrationNumber]
+      properties:
+        registrationNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+
+    OrderUpdate:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+
+    OrderLine:
+      type: object
+      properties:
+        orderLineId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        assignedStaffId:
+          type: string
+          format: uuid
+          nullable: true
+        appointmentId:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        unitPrice:
+          type: number
+          format: decimal
+        subtotal:
+          type: number
+          format: decimal
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLineOption'
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLineTax'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLineDiscount'
+
+    OrderLineCreate:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        assignedStaffId:
+          type: string
+          format: uuid
+        appointmentId:
+          type: string
+          format: uuid
+        notes:
+          type: string
+        options:
+          type: array
+          items:
+            type: object
+            required: [optionId]
+            properties:
+              optionId:
+                type: string
+                format: uuid
+
+    OrderLineUpdate:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+        assignedStaffId:
+          type: string
+          format: uuid
+        notes:
+          type: string
+
+    OrderLineOption:
+      type: object
+      properties:
+        orderLineOptionId:
+          type: string
+          format: uuid
+        orderLineId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        value:
+          type: string
+        priceDelta:
+          type: number
+          format: decimal
+
+    OrderLineTax:
+      type: object
+      properties:
+        orderLineTaxId:
+          type: string
+          format: uuid
+        orderLineId:
+          type: string
+          format: uuid
+        taxCode:
+          type: string
+        taxPercentage:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+
+    OrderLineDiscount:
+      type: object
+      properties:
+        orderLineDiscountId:
+          type: string
+          format: uuid
+        orderLineId:
+          type: string
+          format: uuid
+        discountId:
+          type: string
+          format: uuid
+        percentage:
+          type: number
+          format: decimal
+          nullable: true
+        amount:
+          type: number
+          format: decimal
+          nullable: true
+        appliedAmount:
+          type: number
+          format: decimal
+
+    OrderDiscount:
+      type: object
+      properties:
+        orderDiscountId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        discountId:
+          type: string
+          format: uuid
+        percentage:
+          type: number
+          format: decimal
+          nullable: true
+        amount:
+          type: number
+          format: decimal
+          nullable: true
+        appliedAmount:
+          type: number
+          format: decimal
+
+    OrderDiscountCreate:
+      type: object
+      required: [discountId]
+      properties:
+        discountId:
+          type: string
+          format: uuid
+
+    Payment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        methodCode:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        tipPortion:
+          type: number
+          format: decimal
+          nullable: true
+        status:
+          type: string
+          enum: [PENDING, SUCCEEDED, FAILED]
+        processorRef:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    PaymentCreate:
+      type: object
+      required: [methodCode, amount]
+      properties:
+        methodCode:
+          type: string
+          enum: [CASH, CARD, GIFT_CARD]
+        amount:
+          type: number
+          format: decimal
+          minimum: 0
+        tipPortion:
+          type: number
+          format: decimal
+        giftCardCode:
+          type: string
+          description: Required if methodCode is GIFT_CARD
+        cardToken:
+          type: string
+          description: Required if methodCode is CARD (Stripe token)
+
+    PaymentMethod:
+      type: object
+      properties:
+        methodCode:
+          type: string
+        methodName:
+          type: string
+          enum: [CASH, CARD, GIFT_CARD]
+        methodDescription:
+          type: string
+
+    Refund:
+      type: object
+      properties:
+        refundId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        paymentId:
+          type: string
+          format: uuid
+          nullable: true
+        amount:
+          type: number
+          format: decimal
+        reason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    RefundCreate:
+      type: object
+      required: [amount]
+      properties:
+        paymentId:
+          type: string
+          format: uuid
+          description: Original payment to refund
+        amount:
+          type: number
+          format: decimal
+          minimum: 0
+        reason:
+          type: string
+
+    GiftCard:
+      type: object
+      properties:
+        giftCardId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        code:
+          type: string
+        balance:
+          type: number
+          format: decimal
+        active:
+          type: boolean
+
+    Reservation:
+      type: object
+      properties:
+        appointmentId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        serviceProductId:
+          type: string
+          format: uuid
+        employeeId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+        status:
+          type: string
+          enum: [BOOKED, CANCELLED, COMPLETED, NO_SHOW]
+        orderId:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    ReservationCreate:
+      type: object
+      required: [registrationNumber, customerId, serviceProductId, employeeId, startTime, durationMinutes]
+      properties:
+        registrationNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        serviceProductId:
+          type: string
+          format: uuid
+        employeeId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+        notes:
+          type: string
+
+    ReservationUpdate:
+      type: object
+      properties:
+        employeeId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+        status:
+          type: string
+          enum: [BOOKED, CANCELLED, COMPLETED, NO_SHOW]
+        notes:
+          type: string
+
+    TaxCode:
+      type: object
+      properties:
+        taxCode:
+          type: string
+        taxName:
+          type: string
+        taxDescription:
+          type: string
+        taxPercentage:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaxCodeCreate:
+      type: object
+      required: [taxCode, taxName, taxPercentage, validFrom]
+      properties:
+        taxCode:
+          type: string
+        taxName:
+          type: string
+        taxDescription:
+          type: string
+        taxPercentage:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+
+    ServiceChargeConfig:
+      type: object
+      properties:
+        serviceChargeId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        percentage:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+
+    ServiceChargeConfigCreate:
+      type: object
+      required: [registrationNumber, percentage, validFrom]
+      properties:
+        registrationNumber:
+          type: string
+        percentage:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+
+    Discount:
+      type: object
+      properties:
+        discountId:
+          type: string
+          format: uuid
+        registrationNumber:
+          type: string
+        discountName:
+          type: string
+        scope:
+          type: string
+          enum: [ITEM, SERVICE, ORDER]
+        discountPercentage:
+          type: number
+          format: decimal
+          nullable: true
+        discountAmount:
+          type: number
+          format: decimal
+          nullable: true
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+          nullable: true
+        applicableProductIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+
+    DiscountCreate:
+      type: object
+      required: [registrationNumber, discountName, scope, validFrom]
+      properties:
+        registrationNumber:
+          type: string
+        discountName:
+          type: string
+        scope:
+          type: string
+          enum: [ITEM, SERVICE, ORDER]
+        discountPercentage:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        applicableProductIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    DiscountUpdate:
+      type: object
+      properties:
+        discountName:
+          type: string
+        discountPercentage:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        applicableProductIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    InventoryItem:
+      type: object
+      properties:
+        inventoryId:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        onHandQty:
+          type: integer
+        reorderThreshold:
+          type: integer
+          nullable: true
+        product:
+          $ref: '#/components/schemas/Product'
+
+    InventoryAdjustment:
+      type: object
+      properties:
+        adjustmentId:
+          type: string
+          format: uuid
+        inventoryId:
+          type: string
+          format: uuid
+        deltaQty:
+          type: integer
+        reason:
+          type: string
+          example: sale, spoilage, restock
+        createdAt:
+          type: string
+          format: date-time
+        orderLineId:
+          type: string
+          format: uuid
+          nullable: true
+
+    InventoryAdjustmentCreate:
+      type: object
+      required: [deltaQty, reason]
+      properties:
+        deltaQty:
+          type: integer
+        reason:
+          type: string
+        orderLineId:
+          type: string
+          format: uuid
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

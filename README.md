@@ -7,6 +7,8 @@ This is a minimal .NET 8 Web API starter to clone/pull and begin coding immediat
 - `.github/workflows/dotnet.yml` — GitHub Actions CI to build and run tests (none yet).
 - `.gitignore` — Standard Visual Studio/.NET ignores.
 - `.editorconfig` — Basic C# code style defaults.
+- `old_openapi.yaml` — OpenApi specification of our designed POS system (not to be used).
+- `new_openapi.yaml` — OpenApi specification of the POS system which we got from another team (to be used).
 
 ## Prerequisites
 - .NET SDK 8.x (LTS)
@@ -26,3 +28,14 @@ dotnet run --project src/Pos.Api/Pos.Api.csproj
 3. Stand up a database (e.g., PostgreSQL) and add EF Core migrations.
 4. Wire up authentication/authorization and role-based access (Staff/Owner/SuperAdmin).
 5. Add CI steps for tests and code quality.
+
+## Setup local DB
+1. Open Docker Desktop
+2. Run `docker compose up -d` from ...\src directory to start Postgres container
+3. In Rider Database window, add a PostgreSQL data source. Use the following settings:
+   - Host: localhost
+   - Port: 5432
+   - User: point_of_sale
+   - Password: pass
+   - Database: postgres
+4. A schema point_of_sale should be seen in the database
