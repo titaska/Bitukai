@@ -39,3 +39,12 @@ dotnet run --project src/Pos.Api/Pos.Api.csproj
    - Password: pass
    - Database: postgres
 4. A schema point_of_sale should be seen in the database
+
+## Add database migrations
+1. Define an Entity. It should be class in your component model directory after which a table will be created. Use annotations like `[Key], [ForeignKey], [Table], [Column]` and others. Read more about them and their usages.
+2. In AppDbContext, add a DbSet for your entity.
+3. Run the following commands from ...\src\Pos.Api directory:
+   - `dotnet ef migrations add <MigrationName>` - to create a migration (e.g., CreateTaxesTable)
+   - `dotnet ef database update` - to apply the migration to the database
+4. Check the database to see if the new table is created.
+5. If table needs to be altered, change the entity class and repeat step 3.

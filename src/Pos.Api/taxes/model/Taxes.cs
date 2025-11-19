@@ -8,14 +8,14 @@ public class Taxes
 {
     [Key]
     [Column("id")]
-    private Guid _id { get; set; }
+    public Guid id { get; set; }
     
     [Column("name")]
-    private string _name { get; set; }
+    public string name { get; set; }
     
     [Column("description")]
-    private string _description { get; set; }
+    public string? description { get; set; }
     
     [Column("percentage")]
-    private decimal _percentage { get; set; }
+    public decimal percentage { get; set; }
 }
