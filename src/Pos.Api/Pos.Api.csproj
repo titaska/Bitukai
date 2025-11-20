@@ -24,7 +24,6 @@
     <Folder Include="orders\controller\" />
     <Folder Include="orders\dto\" />
     <Folder Include="orders\exception\" />
-    <Folder Include="orders\model\" />
     <Folder Include="orders\repository\" />
     <Folder Include="orders\service\" />
     <Folder Include="reservations\controller\" />
