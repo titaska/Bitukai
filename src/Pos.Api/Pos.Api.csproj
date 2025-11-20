@@ -21,8 +21,6 @@
     <Folder Include="business\repository\" />
     <Folder Include="business\service\" />
     <Folder Include="frontend\" />
-    <Folder Include="orders\controller\" />
-    <Folder Include="orders\dto\" />
     <Folder Include="orders\exception\" />
     <Folder Include="orders\repository\" />
     <Folder Include="orders\service\" />

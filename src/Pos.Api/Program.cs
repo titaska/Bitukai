@@ -10,6 +10,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
