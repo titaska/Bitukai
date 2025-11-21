@@ -8,11 +8,11 @@ public class OrderLineTax
     //PK
     [Key]
     [Column("orderLineTaxId")]
-    public string orderLineTaxId { get; set; }
+    public Guid orderLineTaxId { get; set; }
     
     //FK
     [Column("orderLineId")]
-    public string orderLineId { get; set; }
+    public Guid orderLineId { get; set; }
     
     //FK
     [Column("taxCode")]

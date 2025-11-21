@@ -18,5 +18,8 @@ public class AppDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("point_of_sale");
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Order>()
+            .Property(o => o.status)
+            .HasConversion<string>();
     }
 }

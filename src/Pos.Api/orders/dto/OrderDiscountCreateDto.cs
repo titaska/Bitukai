@@ -1,6 +1,6 @@
 ﻿namespace Pos.Api.orders.dto;
 
-public class OrderLineUpdate
+public class OrderDiscountCreateDto
 {
     
 }

@@ -9,26 +9,26 @@ public class OrderLine
     //PK
     [Key]
     [Column("orderLineId")]
-    public string orderLineId { get; set; }
+    public Guid orderLineId { get; set; }
     
     //FK
     [Column("orderId")]
-    public string orderId { get; set; }
+    public Guid orderId { get; set; }
     
     //FK
     [Column("productId")]
-    public string productId { get; set; }
+    public Guid productId { get; set; }
     
     [Column("quantity")]
     public int quantity { get; set; }
     
     //FK
     [Column("assignedStaffId")]
-    public string? assignedStaffId { get; set; }
+    public Guid? assignedStaffId { get; set; }
     
     //FK
     [Column("appointmentId")]
-    public string? appointmentId { get; set; }
+    public Guid? appointmentId { get; set; }
     
     [Column("notes")]
     public string? notes { get; set; }

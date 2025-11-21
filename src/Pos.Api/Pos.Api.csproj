@@ -23,7 +23,6 @@
     <Folder Include="frontend\" />
     <Folder Include="orders\exception\" />
     <Folder Include="orders\repository\" />
-    <Folder Include="orders\service\" />
     <Folder Include="reservations\controller\" />
     <Folder Include="reservations\dto\" />
     <Folder Include="reservations\exception\" />

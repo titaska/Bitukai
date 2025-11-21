@@ -8,11 +8,11 @@ public class OrderLineOption
     //PK
     [Key]
     [Column("orderLineOptionId")]
-    public string orderLineOptionId { get; set; }
+    public Guid orderLineOptionId { get; set; }
     
     //FK
     [Column("orderLineId")]
-    public string orderLineId { get; set; }
+    public Guid orderLineId { get; set; }
     
     //name (e.g., “Milk”)
     [Column("name")]

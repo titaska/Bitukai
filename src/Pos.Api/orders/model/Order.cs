@@ -3,13 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pos.Api.Orders.Model;
 
+public enum OrderStatus
+{
+    OPEN,
+    CLOSED_PAID,
+    CANCELLED,
+    REFUNDED,
+    PARTIALLY_REFUNDED
+}
+
 [Table("Orders")]
 public class Order
 {
     // PRIMARY KEY
     [Key]
     [Column("orderId")]
-    public string orderId { get; set; }
+    public Guid orderId { get; set; }
 
     // FK → Business.registrationNumber
     [Column("registrationNumber")]
@@ -18,12 +27,11 @@ public class Order
 
     // FK → Customer.customerId  (NULLABLE)
     [Column("customerId")]
-    public string? customerId { get; set; }
-
-    // OPEN | CLOSED_PAID | CANCELLED | REFUNDED | PARTIALLY_REFUNDED
+    public Guid? customerId { get; set; }
+    
     [Column("status")]
     [Required]
-    public string status { get; set; }
+    public OrderStatus status { get; set; }
 
     [Column("createdAt")]
     public DateTime createdAt { get; set; }
@@ -53,4 +61,6 @@ public class Order
     [Column("totalDue")]
     public decimal totalDue { get; set; }
     
+    
+    public List<OrderLine> Lines { get; set; } = new(); //navigacijai
 }
