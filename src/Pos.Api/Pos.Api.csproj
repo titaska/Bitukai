@@ -27,12 +27,7 @@
     <Folder Include="orders\model\" />
     <Folder Include="orders\repository\" />
     <Folder Include="orders\service\" />
-    <Folder Include="reservations\controller\" />
-    <Folder Include="reservations\dto\" />
     <Folder Include="reservations\exception\" />
-    <Folder Include="reservations\model\" />
-    <Folder Include="reservations\repository\" />
-    <Folder Include="reservations\service\" />
     <Folder Include="taxes\controller\" />
     <Folder Include="taxes\dto\" />
     <Folder Include="taxes\exception\" />
