@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.taxes.model;
+using Pos.Api.reservations.model;
 using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.Context;
@@ -9,6 +10,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     
     public DbSet<Taxes> Taxes { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
+
     public DbSet<Business> Businesses => Set<Business>();
     public DbSet<Staff> Staff => Set<Staff>();
     

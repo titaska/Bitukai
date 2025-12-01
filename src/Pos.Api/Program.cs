@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Pos.Api.Context;
+using Pos.Api.reservations.repository;
+using Pos.Api.reservations.service;
 using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Services.Interfaces;
 
@@ -14,6 +16,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
+
+// ADD THIS:
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<ReservationService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
