@@ -5,12 +5,17 @@ using Microsoft.Extensions.Hosting;
 using Pos.Api.Context;
 using Pos.Api.reservations.repository;
 using Pos.Api.reservations.service;
+using Pos.Api.BusinessStaff.Services;
+using Pos.Api.BusinessStaff.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
 
 // ADD THIS:
 builder.Services.AddControllers();
@@ -33,11 +38,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// ADD THIS:
 app.MapControllers();
-
-app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "Pos.Api" }))
-   .WithName("Health")
-   .WithTags("System");
 
 app.Run();

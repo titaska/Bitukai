@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pos.Api.Context;
@@ -11,9 +12,11 @@ using Pos.Api.Context;
 namespace Pos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251124185519_business-staff")]
+    partial class businessstaff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,56 +26,6 @@ namespace Pos.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Pos.Api.reservations.model.Reservation", b =>
-                {
-                    b.Property<string>("AppointmentId")
-                        .HasColumnType("text")
-                        .HasColumnName("appointmentId");
-
-                    b.Property<string>("CustomerId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("customerId");
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("integer")
-                        .HasColumnName("durationMinutes");
-
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("employeeId");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<string>("OrderId")
-                        .HasColumnType("text")
-                        .HasColumnName("orderId");
-
-                    b.Property<string>("RegistrationNumber")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("registrationNumber");
-
-                    b.Property<string>("ServiceProductId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("serviceProductId");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("startTime");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("status");
-
-                    b.HasKey("AppointmentId");
-
-                    b.ToTable("reservations", "point_of_sale");
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Business", b =>
                 {
                     b.Property<string>("RegistrationNumber")
