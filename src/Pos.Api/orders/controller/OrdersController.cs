@@ -130,7 +130,7 @@ public class OrdersController : ControllerBase
                 notes = updatedLine.notes,
                 unitPrice = updatedLine.unitPrice,
                 subTotal = updatedLine.subTotal,
-                options = new List<OrderLineOptionDto>() // You add options later
+                //options = new List<OrderLineOptionDto>()
             };
 
             return Ok(result);

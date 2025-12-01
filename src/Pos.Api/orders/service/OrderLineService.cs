@@ -61,7 +61,7 @@ public class OrderLineService : IOrderLineService
             notes = line.notes,
             unitPrice = line.unitPrice,
             subTotal = line.subTotal,
-            options = new List<OrderLineOptionDto>()
+            //options = new List<OrderLineOptionDto>()
         };
 
         return lineDto;

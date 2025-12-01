@@ -93,7 +93,7 @@ public class OrderService : IOrderService
                 notes = l.notes,
                 unitPrice = l.unitPrice,
                 subTotal = l.subTotal,
-                options = new List<OrderLineOptionDto>(), //empty for now
+                //options = new List<OrderLineOptionDto>(), //empty for now
             }).ToList(),
         }).ToList();
 
@@ -182,7 +182,7 @@ public class OrderService : IOrderService
                 notes = l.notes,
                 unitPrice = l.unitPrice,
                 subTotal = l.subTotal,
-                options = new List<OrderLineOptionDto>(), //empty for now
+                //options = new List<OrderLineOptionDto>(), //empty for now
             }).ToList(),
         };
 
@@ -236,7 +236,7 @@ public class OrderService : IOrderService
                 notes = l.notes,
                 unitPrice = l.unitPrice,
                 subTotal = l.subTotal,
-                options = new List<OrderLineOptionDto>(),
+                //options = new List<OrderLineOptionDto>(),
             }).ToList(),
         };
 

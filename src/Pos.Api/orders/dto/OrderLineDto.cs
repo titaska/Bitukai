@@ -12,7 +12,7 @@ public class OrderLineDto
     public decimal unitPrice { get; set; }
     public decimal subTotal { get; set; }
 
-    public List<OrderLineOptionDto> options { get; set; } = new List<OrderLineOptionDto>();
+    //public List<OrderLineOptionDto> options { get; set; } = new List<OrderLineOptionDto>();
     //public List<OrderLineTaxDto> taxes { get; set; }
     //public List<OrderLineDiscountDto> discounts { get; set; }
 }

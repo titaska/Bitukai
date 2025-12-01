@@ -7,5 +7,5 @@ public class OrderLineCreateDto
     public Guid? assignedStaffId { get; set; }
     public Guid? appointmentId { get; set; }
     public string? notes { get; set; }
-    public List<OrderLineOptionDto> options { get; set; }
+    //public List<OrderLineOptionDto> options { get; set; }
 }
