@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pos.Api.Orders.Model;
 using Pos.Api.taxes.model;
 using Pos.Api.reservations.model;
 using Pos.Api.BusinessStaff.Models;
@@ -10,6 +11,10 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     
     public DbSet<Taxes> Taxes { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderLine> OrderLines { get; set; }
+    public DbSet<OrderLineOption> OrderLineOptions { get; set; }
+    public DbSet<OrderLineTax> OrderLineTaxes { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
 
     public DbSet<Business> Businesses => Set<Business>();
@@ -19,6 +24,9 @@ public class AppDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("point_of_sale");
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Order>()
+            .Property(o => o.status)
+            .HasConversion<string>();
 
         // BUSINESS
             modelBuilder.Entity<Business>(entity =>
