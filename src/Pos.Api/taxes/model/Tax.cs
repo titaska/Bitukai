@@ -4,11 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Pos.Api.taxes.model;
 
 [Table("taxes")]
-public class Taxes
+public class Tax
 {
-    [Key]
-    [Column("id")]
-    public Guid id { get; set; }
+    [Key] [Column("id")] public string id { get; set; } = Guid.NewGuid().ToString();
     
     [Column("name")]
     public string name { get; set; }
