@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     
-    public DbSet<Taxes> Taxes { get; set; }
+    public DbSet<Tax> Taxes { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderLine> OrderLines { get; set; }
     public DbSet<OrderLineOption> OrderLineOptions { get; set; }

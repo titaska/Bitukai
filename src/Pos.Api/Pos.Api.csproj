@@ -14,23 +14,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="business\controller\" />
-    <Folder Include="business\dto\" />
-    <Folder Include="business\exception\" />
-    <Folder Include="business\model\" />
-    <Folder Include="business\repository\" />
-    <Folder Include="business\service\" />
-    <Folder Include="frontend\" />
     <Folder Include="orders\exception\" />
     <Folder Include="orders\repository\" />
     <Folder Include="reservations\controller\" />
     <Folder Include="reservations\dto\" />
     <Folder Include="orders\service\" />
     <Folder Include="reservations\exception\" />
-    <Folder Include="taxes\controller\" />
-    <Folder Include="taxes\dto\" />
     <Folder Include="taxes\exception\" />
-    <Folder Include="taxes\repository\" />
-    <Folder Include="taxes\service\" />
   </ItemGroup>
 </Project>
