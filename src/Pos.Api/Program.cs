@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pos.Api.Context;
 using Pos.Api.orders.service;
-
+using System.Text.Json.Serialization;
 using Pos.Api.reservations.repository;
 using Pos.Api.reservations.service;
 using Pos.Api.BusinessStaff.Services;
@@ -20,9 +20,21 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderLineService, OrderLineService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy => policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
 
-// ADD THIS:
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ReservationService>();
@@ -43,5 +55,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.UseCors("AllowReact");
 
 app.Run();
