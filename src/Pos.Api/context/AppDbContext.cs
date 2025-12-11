@@ -3,6 +3,7 @@ using Pos.Api.Orders.Model;
 using Pos.Api.taxes.model;
 using Pos.Api.reservations.model;
 using Pos.Api.BusinessStaff.Models;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.Context;
 
@@ -16,6 +17,9 @@ public class AppDbContext : DbContext
     public DbSet<OrderLineOption> OrderLineOptions { get; set; }
     public DbSet<OrderLineTax> OrderLineTaxes { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
+    
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductStaff> ProductStaff { get; set; }
 
     public DbSet<Business> Businesses => Set<Business>();
     public DbSet<Staff> Staff => Set<Staff>();
