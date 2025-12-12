@@ -24,11 +24,11 @@ public class OrderLine
     
     //FK
     [Column("assignedStaffId")]
-    public Guid? assignedStaffId { get; set; }
+    public string? assignedStaffId { get; set; }
     
     //FK
     [Column("appointmentId")]
-    public Guid? appointmentId { get; set; }
+    public string? appointmentId { get; set; }
     
     [Column("notes")]
     public string? notes { get; set; }

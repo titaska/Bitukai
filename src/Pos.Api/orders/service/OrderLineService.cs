@@ -83,8 +83,8 @@ public class OrderLineService : IOrderLineService
         if (dto.quantity.HasValue)
             line.quantity = dto.quantity.Value;
 
-        if (dto.assignedStaffId.HasValue)
-            line.assignedStaffId = dto.assignedStaffId.Value;
+        if (dto.assignedStaffId != null)
+            line.assignedStaffId = dto.assignedStaffId;
 
         if (dto.notes != null)
             line.notes = dto.notes;

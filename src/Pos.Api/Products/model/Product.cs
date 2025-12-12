@@ -18,7 +18,7 @@ public class Product
     
     //FK to business
     [Column("registrationNumber")] 
-    public Guid registrationNumber { get; set; }
+    public string registrationNumber { get; set; }
     
     [Column("type")]
     public ProductType type { get; set; }
@@ -34,7 +34,7 @@ public class Product
     
     //FK to Tax
     [Column("taxCode")]
-    public Guid taxCode { get; set; }
+    public string taxCode { get; set; }
     
     [Column("status")]
     public bool status { get; set; }

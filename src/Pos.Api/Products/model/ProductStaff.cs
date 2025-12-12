@@ -15,7 +15,7 @@ public class ProductStaff
     
     //Fk to staff
     [Column("staffId")]
-    public Guid staffId { get; set; }
+    public string staffId { get; set; }
     
     [Column("status")]
     public bool status { get; set; }
