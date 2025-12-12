@@ -9,10 +9,12 @@ using Pos.Api.Products.dto;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly IProductStaffService _productStaffService;
 
-    public ProductsController(IProductService productService)
+    public ProductsController(IProductService productService,  IProductStaffService productStaffService)
     {
         _productService = productService;
+        _productStaffService = productStaffService;
     }
 
     // GET /products
@@ -101,4 +103,37 @@ public class ProductsController : ControllerBase
         }
     }
     
+    [HttpGet("{productId}/staff")]
+    public async Task<IActionResult> GetEligibleStaff(Guid productId)
+    {
+        var staff = await _productStaffService.GetEligibleStaffAsync(productId);
+        return Ok(staff);
+    }
+    
+    [HttpPost("{productId}/staff")]
+    public async Task<IActionResult> LinkStaffToProduct(Guid productId, [FromBody] ProductStaffCreateDto dto)
+    {
+        var created = await _productStaffService.LinkStaffToProductAsync(productId, dto);
+        return CreatedAtAction(nameof(GetEligibleStaff), new { productId }, created);
+    }
+    
+    [HttpPut("{productId}/staff/{staffId}")]
+    public async Task<IActionResult> UpdateProductStaff(Guid productId, int staffId, [FromBody] ProductStaffUpdateDto dto)
+    {
+        var updated = await _productStaffService.UpdateProductStaffAsync(productId, staffId, dto);
+        if (updated == null)
+            return NotFound($"No ProductStaff link found for productId {productId} and staffId {staffId}");
+
+        return Ok(updated);
+    }
+    
+    [HttpDelete("{productId}/staff/{staffId}")]
+    public async Task<IActionResult> UnlinkStaffFromProduct(Guid productId, int staffId)
+    {
+        var success = await _productStaffService.UnlinkStaffFromProductAsync(productId, staffId);
+        if (!success)
+            return NotFound($"No ProductStaff link found for productId {productId} and staffId {staffId}");
+
+        return NoContent();
+    }
 }

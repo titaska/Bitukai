@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pos.Api.Context;
@@ -11,9 +12,11 @@ using Pos.Api.Context;
 namespace Pos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251212172838_FixedOneVariable")]
+    partial class FixedOneVariable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,11 +351,11 @@ namespace Pos.Api.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("status");
 
-                    b.Property<DateTime?>("valideFrom")
+                    b.Property<DateTime>("valideFrom")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("valideFrom");
 
-                    b.Property<DateTime?>("valideTo")
+                    b.Property<DateTime>("valideTo")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("valideTo");
 
