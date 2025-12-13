@@ -13,8 +13,10 @@ namespace Pos.Api.reservations.model;
         [Column("registrationNumber")]
         public string RegistrationNumber { get; set; } = null!; // FK → Business
 
-        [Column("customerId")]
-        public string CustomerId { get; set; } = null!; // FK → Customer
+        public string ClientName { get; set; } = null!;
+        public string ClientSurname { get; set; } = null!;
+        public string ClientPhone { get; set; } = null!;
+
 
         [Column("serviceProductId")]
         public string ServiceProductId { get; set; } = null!; // FK → Product (SERVICE)

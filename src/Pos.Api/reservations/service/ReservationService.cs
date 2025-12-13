@@ -36,14 +36,20 @@ namespace Pos.Api.reservations.service
 
             var reservation = new Reservation
             {
+                AppointmentId = Guid.NewGuid().ToString(),
                 RegistrationNumber = dto.RegistrationNumber,
-                CustomerId = dto.CustomerId,
                 ServiceProductId = dto.ServiceProductId,
                 EmployeeId = dto.EmployeeId,
                 StartTime = dto.StartTime,
                 DurationMinutes = dto.DurationMinutes,
-                Notes = dto.Notes
+                Status = "BOOKED",
+                Notes = dto.Notes,
+
+                ClientName = dto.ClientName,
+                ClientSurname = dto.ClientSurname,
+                ClientPhone = dto.ClientPhone
             };
+
 
             await _repo.CreateAsync(reservation);
             return MapToDto(reservation);
@@ -67,18 +73,22 @@ namespace Pos.Api.reservations.service
         }
 
         private ReservationDto MapToDto(Reservation r) =>
-            new ReservationDto
-            {
-                AppointmentId = r.AppointmentId,
-                RegistrationNumber = r.RegistrationNumber,
-                CustomerId = r.CustomerId,
-                ServiceProductId = r.ServiceProductId,
-                EmployeeId = r.EmployeeId,
-                StartTime = r.StartTime,
-                DurationMinutes = r.DurationMinutes,
-                Status = r.Status,
-                OrderId = r.OrderId,
-                Notes = r.Notes
-            };
+        new ReservationDto
+        {
+        AppointmentId = r.AppointmentId,
+        RegistrationNumber = r.RegistrationNumber,
+        ServiceProductId = r.ServiceProductId,
+        EmployeeId = r.EmployeeId,
+        StartTime = r.StartTime,
+        DurationMinutes = r.DurationMinutes,
+        Status = r.Status,
+        OrderId = r.OrderId,
+        Notes = r.Notes,
+
+        ClientName = r.ClientName,
+        ClientSurname = r.ClientSurname,
+        ClientPhone = r.ClientPhone
+        };
+
     }
 }

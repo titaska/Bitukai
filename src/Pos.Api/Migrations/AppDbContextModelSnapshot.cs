@@ -367,10 +367,17 @@ namespace Pos.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("appointmentId");
 
-                    b.Property<string>("CustomerId")
+                    b.Property<string>("ClientName")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("customerId");
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientPhone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientSurname")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("integer")
