@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pos.Api.Context;
@@ -11,9 +12,11 @@ using Pos.Api.Context;
 namespace Pos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211143735_Products")]
+    partial class Products
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,12 +185,12 @@ namespace Pos.Api.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("orderLineId");
 
-                    b.Property<string>("appointmentId")
-                        .HasColumnType("text")
+                    b.Property<Guid?>("appointmentId")
+                        .HasColumnType("uuid")
                         .HasColumnName("appointmentId");
 
-                    b.Property<string>("assignedStaffId")
-                        .HasColumnType("text")
+                    b.Property<Guid?>("assignedStaffId")
+                        .HasColumnType("uuid")
                         .HasColumnName("assignedStaffId");
 
                     b.Property<string>("notes")
@@ -306,18 +309,16 @@ namespace Pos.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<string>("registrationNumber")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("registrationNumber")
+                        .HasColumnType("uuid")
                         .HasColumnName("registrationNumber");
 
                     b.Property<bool>("status")
                         .HasColumnType("boolean")
                         .HasColumnName("status");
 
-                    b.Property<string>("taxCode")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("taxCode")
+                        .HasColumnType("uuid")
                         .HasColumnName("taxCode");
 
                     b.Property<int>("type")
@@ -340,19 +341,19 @@ namespace Pos.Api.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("productId");
 
-                    b.Property<int>("staffId")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("staffId")
+                        .HasColumnType("uuid")
                         .HasColumnName("staffId");
 
                     b.Property<bool>("status")
                         .HasColumnType("boolean")
                         .HasColumnName("status");
 
-                    b.Property<DateTime?>("valideFrom")
+                    b.Property<DateTime>("valideFrom")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("valideFrom");
 
-                    b.Property<DateTime?>("valideTo")
+                    b.Property<DateTime>("valideTo")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("valideTo");
 
