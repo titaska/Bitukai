@@ -9,7 +9,6 @@ using Pos.Api.reservations.repository;
 using Pos.Api.reservations.service;
 using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Services.Interfaces;
-using Pos.Api.Products.service;
 using Pos.Api.taxes.repository;
 using Pos.Api.taxes.service;
 
@@ -41,8 +40,6 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ReservationService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<TaxService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
