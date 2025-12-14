@@ -50,6 +50,11 @@ namespace Pos.Api.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("VatCode")
                         .IsRequired()
                         .HasMaxLength(50)

@@ -54,6 +54,13 @@ public class AppDbContext : DbContext
                 entity.Property(b => b.CurrencyCode)
                       .IsRequired()
                       .HasMaxLength(3);
+                
+                entity.Property(b => b.Type)
+                    .HasConversion(
+                        v => v.ToString().ToLowerInvariant(),
+                        v => Enum.Parse<BusinessType>(v, true))
+                    .HasMaxLength(20)
+                    .IsRequired();
             });
 
             // STAFF
