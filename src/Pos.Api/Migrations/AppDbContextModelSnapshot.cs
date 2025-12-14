@@ -68,7 +68,7 @@ namespace Pos.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StaffId"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Email");
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ServiceConfig", b =>
                 {
                     b.Property<int>("Id")

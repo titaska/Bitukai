@@ -6,14 +6,17 @@ namespace Pos.Api.taxes.model;
 [Table("taxes")]
 public class Tax
 {
-    [Key] [Column("id")] public string id { get; set; } = Guid.NewGuid().ToString();
-    
+    [Key]
+    [Column("id")]
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    [Required]
     [Column("name")]
-    public string name { get; set; }
-    
+    public string Name { get; set; } = string.Empty;
+
     [Column("description")]
-    public string? description { get; set; }
-    
+    public string? Description { get; set; }
+
     [Column("percentage")]
-    public decimal percentage { get; set; }
+    public decimal Percentage { get; set; }
 }
