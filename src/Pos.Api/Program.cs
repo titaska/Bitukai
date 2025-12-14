@@ -4,45 +4,45 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pos.Api.Context;
 using Pos.Api.orders.service;
+using System.Text.Json.Serialization;
 using Pos.Api.reservations.repository;
 using Pos.Api.reservations.service;
 using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.Products.service;
 using Pos.Api.taxes.repository;
 using Pos.Api.taxes.service;
 
 var builder = WebApplication.CreateBuilder(args);
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-var frontendOrigin = "http://localhost:3000";
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy
-            .WithOrigins(frontendOrigin)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
-
-builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderLineService, OrderLineService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy => policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ReservationService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<TaxService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -59,8 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowFrontend");
-
 app.MapControllers();
+app.UseCors("AllowReact");
 
 app.Run();
