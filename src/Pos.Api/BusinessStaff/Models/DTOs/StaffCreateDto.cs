@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Pos.Api.BusinessStaff.Models;
+using System.Text.Json.Serialization;
 
 namespace Pos.Api.BusinessStaff.Models.DTOs
 {
     public class StaffCreateDto
     {
-        [Required]
-        public string RegistrationNumber { get; set; } = null!;   // Business FK
+        [JsonIgnore]
+        public string? RegistrationNumber { get; set; } = null!;   // Business FK
 
         [Required]
         public StaffStatus Status { get; set; }

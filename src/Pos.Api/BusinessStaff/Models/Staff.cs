@@ -27,5 +27,8 @@ namespace Pos.Api.BusinessStaff.Models
 
         // Navigation
         public Business Business { get; set; } = null!;
+
+        public ICollection<StaffServiceAssignment> ServiceAssignments { get; set; }
+            = new List<StaffServiceAssignment>();
     }
 }
