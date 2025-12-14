@@ -10,11 +10,11 @@ using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.Services
 {
-    public class StaffCrudService : IStaffService
+    public class StaffService : IStaffService
     {
         private readonly AppDbContext _context;
 
-        public StaffCrudService(AppDbContext context)
+        public StaffService(AppDbContext context)
         {
             _context = context;
         }
