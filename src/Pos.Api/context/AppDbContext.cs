@@ -19,6 +19,9 @@ public class AppDbContext : DbContext
     public DbSet<OrderLineOption> OrderLineOptions { get; set; }
     public DbSet<OrderLineTax> OrderLineTaxes { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
+    
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductStaff> ProductStaff { get; set; }
 
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductStaff> ProductStaff { get; set; }

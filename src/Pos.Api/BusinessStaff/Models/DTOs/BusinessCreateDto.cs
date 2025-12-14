@@ -26,5 +26,8 @@ namespace Pos.Api.BusinessStaff.Models.DTOs
         [Required]
         [MaxLength(3)]
         public string CurrencyCode { get; set; } = null!;
+        
+        [Required]
+        public BusinessType Type { get; set; }
     }
 }

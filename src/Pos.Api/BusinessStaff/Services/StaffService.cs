@@ -103,6 +103,27 @@ namespace Pos.Api.BusinessStaff.Services
             return await GetByIdAsync(entity.StaffId)
                    ?? throw new Exception("Failed to create staff");
         }
+        
+        public async Task<StaffDto?> AuthenticateAsync(string email, string password)
+        {
+            var staff = await _context.Staff.FirstOrDefaultAsync(s => s.Email == email);
+            if (staff == null) return null;
+            
+            if (staff.PasswordHash != password) return null;
+            
+            return new StaffDto
+            {
+                StaffId = staff.StaffId,
+                RegistrationNumber = staff.RegistrationNumber,
+                Status = staff.Status,
+                FirstName = staff.FirstName,
+                LastName = staff.LastName,
+                Email = staff.Email,
+                PhoneNumber = staff.PhoneNumber,
+                Role = staff.Role,
+                HireDate = staff.HireDate
+            };
+        }
 
         public async Task<bool> UpdateAsync(int staffId, StaffUpdateDto dto)
         {

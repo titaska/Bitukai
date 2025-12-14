@@ -6,8 +6,8 @@ public class OrderLineDto
     public Guid orderId { get; set; }
     public Guid productId { get; set; }
     public int quantity { get; set; }
-    public Guid? assignedStaffId { get; set; }
-    public Guid? appointmentId { get; set; }
+    public string? assignedStaffId { get; set; }
+    public string? appointmentId { get; set; }
     public string? notes { get; set; }
     public decimal unitPrice { get; set; }
     public decimal subTotal { get; set; }

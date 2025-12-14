@@ -48,6 +48,14 @@ namespace Pos.Api.BusinessStaff.Controllers
             var created = await _staffService.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { staffId = created.StaffId }, created);
         }
+        
+        [HttpPost("login")]
+        public async Task<ActionResult<StaffDto>> Login([FromBody] LoginRequestDto dto)
+        {
+            var auth = await _staffService.AuthenticateAsync(dto.Email, dto.PasswordHash);
+            if (auth == null) return Unauthorized();
+            return Ok(auth);
+        }
 
         [HttpPut("{staffId:int}")]
         public async Task<IActionResult> Update(int staffId, [FromBody] StaffUpdateDto dto)

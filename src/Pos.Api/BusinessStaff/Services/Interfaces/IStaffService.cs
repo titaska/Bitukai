@@ -12,6 +12,8 @@ namespace Pos.Api.BusinessStaff.Services.Interfaces
         Task<IEnumerable<StaffDto>> GetByBusinessAsync(string registrationNumber);
         Task<StaffDto?> GetByIdAsync(int staffId);
         Task<StaffDto> CreateAsync(StaffCreateDto dto);
+        
+        Task<StaffDto?> AuthenticateAsync(string email, string password);
         Task<bool> UpdateAsync(int staffId, StaffUpdateDto dto);
         Task<bool> DeleteAsync(int staffId);
     }
