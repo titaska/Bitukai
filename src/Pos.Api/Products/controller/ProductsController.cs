@@ -1,11 +1,11 @@
-﻿namespace Pos.Api.Products.controller;
+namespace Pos.Api.Products.controller;
 using Microsoft.AspNetCore.Mvc;
 using Pos.Api.Products.model;
 using Pos.Api.Products.service;
 using Pos.Api.Products.dto;
 
+[Route("api/products")]
 [ApiController]
-[Route("products")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;

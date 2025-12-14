@@ -10,9 +10,20 @@ namespace Pos.Api.reservations.controller
     {
         private readonly ReservationService _service;
 
+     
+
         public ReservationController(ReservationService service)
         {
             _service = service;
+        }
+
+        [HttpGet("availability")]
+        public async Task<IActionResult> GetAvailability(
+        [FromQuery] string employeeId,
+        [FromQuery] DateTime date)
+        {
+            var takenSlots = await _service.GetTakenSlotsAsync(employeeId, date);
+            return Ok(takenSlots);
         }
 
         [HttpGet]

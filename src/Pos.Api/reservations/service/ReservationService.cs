@@ -72,6 +72,12 @@ namespace Pos.Api.reservations.service
             await _repo.DeleteAsync(r);
         }
 
+        public async Task<List<DateTime>> GetTakenSlotsAsync(string employeeId, DateTime date)
+        {
+            return await _repo.GetTakenSlotsAsync(employeeId, date.Date);
+        }
+
+
         private ReservationDto MapToDto(Reservation r) =>
         new ReservationDto
         {
