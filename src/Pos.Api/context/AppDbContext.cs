@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Orders.Model;
 using Pos.Api.taxes.model;
@@ -36,6 +37,7 @@ public class AppDbContext : DbContext
             .Property(o => o.status)
             .HasConversion<string>();
 
+        // BUSINESS
         modelBuilder.Entity<Business>(entity =>
         {
             entity.HasKey(b => b.RegistrationNumber);
@@ -67,6 +69,7 @@ public class AppDbContext : DbContext
                 .IsRequired();
         });
 
+        // STAFF
         modelBuilder.Entity<Staff>(entity =>
         {
             entity.HasKey(s => s.StaffId);
@@ -97,6 +100,7 @@ public class AppDbContext : DbContext
                 .HasMaxLength(100);
         });
 
+        // SERVICES
         modelBuilder.Entity<ServiceConfig>(entity =>
         {
             entity.HasKey(x => x.Id);
@@ -110,6 +114,7 @@ public class AppDbContext : DbContext
                 .IsRequired();
         });
 
+        // STAFF <-> SERVICES (Assignments)
         modelBuilder.Entity<StaffServiceAssignment>(entity =>
         {
             entity.HasKey(x => x.Id);
