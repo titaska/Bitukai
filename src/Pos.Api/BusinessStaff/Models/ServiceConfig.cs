@@ -13,6 +13,6 @@ namespace Pos.Api.BusinessStaff.Models
         public decimal Price { get; set; }
 
         [JsonIgnore]  
-        public ICollection<StaffServiceAssignment> StaffAssignments { get; set; }
+        public ICollection<StaffServiceAssignment> StaffAssignments { get; set; } = new List<StaffServiceAssignment>();
     }
 }
