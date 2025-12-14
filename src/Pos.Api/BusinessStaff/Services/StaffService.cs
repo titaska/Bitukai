@@ -77,9 +77,16 @@ namespace Pos.Api.BusinessStaff.Services
 
         public async Task<StaffDto> CreateAsync(StaffCreateDto dto)
         {
+            var defaultBusiness = await _context.Businesses.FirstOrDefaultAsync();
+            if (defaultBusiness == null)
+            {
+                throw new InvalidOperationException(
+                    "No Business found in database. Cannot create staff without associated Business.");
+            }
+
             var entity = new Staff
             {
-                RegistrationNumber = dto.RegistrationNumber,
+                RegistrationNumber = defaultBusiness.RegistrationNumber, // automatiškai
                 Status = dto.Status,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -87,7 +94,7 @@ namespace Pos.Api.BusinessStaff.Services
                 PhoneNumber = dto.PhoneNumber,
                 PasswordHash = dto.PasswordHash,
                 Role = dto.Role,
-                HireDate = dto.HireDate
+                HireDate = DateTime.SpecifyKind(dto.HireDate, DateTimeKind.Utc)
             };
 
             _context.Staff.Add(entity);
@@ -107,12 +114,14 @@ namespace Pos.Api.BusinessStaff.Services
             entity.LastName = dto.LastName;
             entity.Email = dto.Email;
             entity.PhoneNumber = dto.PhoneNumber;
+
             if (!string.IsNullOrWhiteSpace(dto.PasswordHash))
             {
                 entity.PasswordHash = dto.PasswordHash;
             }
+
             entity.Role = dto.Role;
-            entity.HireDate = dto.HireDate;
+            entity.HireDate = DateTime.SpecifyKind(dto.HireDate, DateTimeKind.Utc);
 
             await _context.SaveChangesAsync();
             return true;
