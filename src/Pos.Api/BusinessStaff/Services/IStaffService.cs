@@ -1,4 +1,5 @@
 using Pos.Api.BusinessStaff.dto;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Services
 {

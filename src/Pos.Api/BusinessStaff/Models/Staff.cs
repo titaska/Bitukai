@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Models
 {
@@ -55,7 +56,7 @@ namespace Pos.Api.BusinessStaff.Models
         [ForeignKey(nameof(registrationNumber))]
         public Business Business { get; set; } = null!;
 
-        public ICollection<ServiceStaff> serviceAssignments { get; set; }
-            = new List<ServiceStaff>();
+        public ICollection<ProductStaff> productAssignments { get; set; }
+            = new List<ProductStaff>();
     }
 }

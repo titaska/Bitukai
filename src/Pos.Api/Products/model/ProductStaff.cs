@@ -1,6 +1,8 @@
 ﻿namespace Pos.Api.Products.model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Pos.Api.BusinessStaff.Models;
+
 
 [Table("ProductStaff")]
 public class ProductStaff
@@ -25,5 +27,7 @@ public class ProductStaff
     
     [Column("valideTo")]
     public DateTime? valideTo { get; set; }
-    
+
+    public Product product { get; set; } = null!;
+    public Staff staff { get; set; } = null!;    
 }

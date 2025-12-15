@@ -7,6 +7,7 @@ using Pos.Api.Context;
 using Pos.Api.BusinessStaff.dto;
 using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Models;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Services
 {

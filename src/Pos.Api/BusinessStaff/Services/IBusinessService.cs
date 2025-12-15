@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pos.Api.BusinessStaff.dto;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Services
 {
