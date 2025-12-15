@@ -16,7 +16,7 @@ namespace Pos.Api.BusinessStaff.Controllers
         public async Task<ActionResult<List<StaffDto>>> GetAll([FromQuery] string registrationNumber)
             => Ok(await _service.GetAll(registrationNumber));
 
-        [HttpGet("{staffId}")]
+        [HttpGet("{staffId:Guid}")]
         public async Task<ActionResult<StaffDto>> GetById(Guid staffId)
         {
             var item = await _service.GetById(staffId);
@@ -33,19 +33,19 @@ namespace Pos.Api.BusinessStaff.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<StaffDto>> Login([FromBody] LoginRequestDto dto)
         {
-            var auth = await _service.AuthenticateAsync(dto.Email, dto.PasswordHash);
+            var auth = await _service.AuthenticateAsync(dto.Email, dto.Password);
             if (auth == null) return Unauthorized();
             return Ok(auth);
         }
 
-        [HttpPut("{staffId}")]
+        [HttpPut("{staffId:Guid}")]
         public async Task<ActionResult<StaffDto>> Update(Guid staffId, [FromBody] StaffUpdateDto dto)
         {
             var updated = await _service.Update(staffId, dto);
             return updated == null ? NotFound() : Ok(updated);
         }
 
-        [HttpDelete("{staffId}")]
+        [HttpDelete("{staffId:Guid}")]
         public async Task<IActionResult> Delete(Guid staffId)
             => await _service.Delete(staffId) ? NoContent() : NotFound();
     }

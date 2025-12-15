@@ -10,7 +10,7 @@ using Pos.Api.BusinessStaff.Services;
 namespace Pos.Api.BusinessStaff.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/business")]
     public class BusinessController : ControllerBase
     {
         private readonly IBusinessService _businessService;

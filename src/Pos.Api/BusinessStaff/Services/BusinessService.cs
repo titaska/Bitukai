@@ -59,7 +59,7 @@ namespace Pos.Api.BusinessStaff.Services
         {
             var entity = new Business
             {
-                RegistrationNumber = dto.RegistrationNumber,
+                RegistrationNumber = Guid.NewGuid().ToString(),
                 VatCode = dto.VatCode,
                 Name = dto.Name,
                 Location = dto.Location,

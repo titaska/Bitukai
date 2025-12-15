@@ -10,9 +10,6 @@ namespace Pos.Api.BusinessStaff.dto
     public class BusinessCreateDto
     {
         [Required]
-        public string RegistrationNumber { get; set; } = null!;
-
-        [Required]
         public string VatCode { get; set; } = null!;
 
         [Required]
