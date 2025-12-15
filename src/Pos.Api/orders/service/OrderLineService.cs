@@ -12,13 +12,15 @@ public interface IOrderLineService
     Task<OrderLine> UpdateLineAsync(Guid orderId, Guid lineId, OrderLineUpdateDto dto);
 
     Task DeleteLineAsync(Guid orderId, Guid lineId);
+
+    Task<decimal> CreateOrderLineTaxAsync(Guid orderLineId);
 }
-    
-    
+
+
 public class OrderLineService : IOrderLineService
 {
     private readonly AppDbContext _context;
-    
+
     public OrderLineService(AppDbContext dbContext)
     {
         _context = dbContext;
@@ -32,8 +34,8 @@ public class OrderLineService : IOrderLineService
 
         if (order.status != OrderStatus.OPEN)
             throw new InvalidOperationException("Cannot add line to closed order");
-        
-        
+
+
         var line = new OrderLine
         {
             orderLineId = Guid.NewGuid(),
@@ -43,13 +45,13 @@ public class OrderLineService : IOrderLineService
             assignedStaffId = input.assignedStaffId,
             appointmentId = input.appointmentId,
             notes = input.notes,
-            unitPrice = 0, // TODO: fetch product price
-            subTotal = 0   // TODO: calculate quantity * unitPrice + options
+            unitPrice = input.unitPrice,
+            subTotal = input.unitPrice * input.quantity
         };
 
         await _context.OrderLines.AddAsync(line);
         await _context.SaveChangesAsync();
-        
+
         var lineDto = new OrderLineDto
         {
             orderLineId = line.orderLineId,
@@ -61,7 +63,6 @@ public class OrderLineService : IOrderLineService
             notes = line.notes,
             unitPrice = line.unitPrice,
             subTotal = line.subTotal,
-            //options = new List<OrderLineOptionDto>()
         };
 
         return lineDto;
@@ -75,11 +76,11 @@ public class OrderLineService : IOrderLineService
 
         if (order.status != OrderStatus.OPEN)
             throw new InvalidOperationException("Cannot update a line on a closed order.");
-        
+
         var line = await _context.OrderLines.FirstOrDefaultAsync(l => l.orderLineId == lineId && l.orderId == orderId);
         if (line == null)
             throw new KeyNotFoundException("Order line not found.");
-        
+
         if (dto.quantity.HasValue)
             line.quantity = dto.quantity.Value;
 
@@ -88,14 +89,14 @@ public class OrderLineService : IOrderLineService
 
         if (dto.notes != null)
             line.notes = dto.notes;
-        
+
         line.subTotal = line.unitPrice * line.quantity;
 
         await _context.SaveChangesAsync();
 
         return line;
     }
-    
+
     public async Task DeleteLineAsync(Guid orderId, Guid lineId)
     {
         var order = await _context.Orders.FirstOrDefaultAsync(o => o.orderId == orderId);
@@ -104,14 +105,63 @@ public class OrderLineService : IOrderLineService
 
         if (order.status != OrderStatus.OPEN)
             throw new InvalidOperationException("Cannot delete a line on a closed order.");
-        
+
         var line = await _context.OrderLines
             .FirstOrDefaultAsync(l => l.orderLineId == lineId && l.orderId == orderId);
 
         if (line == null)
             throw new KeyNotFoundException("Order line not found.");
-        
+
         _context.OrderLines.Remove(line);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<decimal> CreateOrderLineTaxAsync(Guid orderLineId)
+    {
+        
+        var orderLine = await _context.OrderLines
+            .FirstOrDefaultAsync(ol => ol.orderLineId == orderLineId);
+
+        if (orderLine == null)
+            throw new KeyNotFoundException("OrderLine not found");
+
+        
+        var product = await _context.Products
+            .FirstOrDefaultAsync(p => p.productId == orderLine.productId);
+
+        if (product == null)
+            throw new KeyNotFoundException("Product not found");
+
+        
+        var tax = await _context.Taxes
+            .FirstOrDefaultAsync(t => t.id == product.taxCode);
+
+        
+        if (tax == null || tax.percentage <= 0)
+            return 0m;
+
+        
+        var taxAmount = Math.Round(
+            orderLine.subTotal * (tax.percentage / 100m),
+            2,
+            MidpointRounding.AwayFromZero
+        );
+
+        
+        var orderLineTax = new OrderLineTax
+        {
+            orderLineTaxId = Guid.NewGuid(),
+            orderLineId = orderLineId,
+            taxCode = tax.id,
+            taxPercentage = tax.percentage,
+            taxAmount = taxAmount
+        };
+
+        _context.OrderLineTaxes.Add(orderLineTax);
+        await _context.SaveChangesAsync();
+
+        
+        return taxAmount;
+    }
+
 }
