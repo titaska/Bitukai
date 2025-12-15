@@ -16,8 +16,8 @@ namespace Pos.Api.BusinessStaff.Controllers
         public async Task<ActionResult<List<StaffDto>>> GetAll([FromQuery] string registrationNumber)
             => Ok(await _service.GetAll(registrationNumber));
 
-        [HttpGet("{staffId:int}")]
-        public async Task<ActionResult<StaffDto>> GetById(int staffId)
+        [HttpGet("{staffId:Guid}")]
+        public async Task<ActionResult<StaffDto>> GetById(Guid staffId)
         {
             var item = await _service.GetById(staffId);
             return item == null ? NotFound() : Ok(item);
@@ -38,15 +38,15 @@ namespace Pos.Api.BusinessStaff.Controllers
             return Ok(auth);
         }
 
-        [HttpPut("{staffId:int}")]
-        public async Task<ActionResult<StaffDto>> Update(int staffId, [FromBody] StaffUpdateDto dto)
+        [HttpPut("{staffId:Guid}")]
+        public async Task<ActionResult<StaffDto>> Update(Guid staffId, [FromBody] StaffUpdateDto dto)
         {
             var updated = await _service.Update(staffId, dto);
             return updated == null ? NotFound() : Ok(updated);
         }
 
-        [HttpDelete("{staffId:int}")]
-        public async Task<IActionResult> Delete(int staffId)
+        [HttpDelete("{staffId:Guid}")]
+        public async Task<IActionResult> Delete(Guid staffId)
             => await _service.Delete(staffId) ? NoContent() : NotFound();
     }
 }

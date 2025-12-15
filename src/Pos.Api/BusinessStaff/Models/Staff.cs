@@ -12,7 +12,7 @@ namespace Pos.Api.BusinessStaff.Models
         // PK
         [Key]
         [Column("StaffId")]
-        public int staffId { get; set; }
+        public Guid staffId { get; set; }
 
         // FK -> Business (Business.RegistrationNumber)
         [Required]

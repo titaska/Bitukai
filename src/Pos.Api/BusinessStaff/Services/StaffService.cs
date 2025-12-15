@@ -20,7 +20,7 @@ namespace Pos.Api.BusinessStaff.Services
             return entities.Select(ToDto).ToList();
         }
 
-        public async Task<StaffDto?> GetById(int staffId)
+        public async Task<StaffDto?> GetById(Guid staffId)
         {
             var s = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
             return s == null ? null : ToDto(s);
@@ -67,7 +67,7 @@ namespace Pos.Api.BusinessStaff.Services
             };
         }
 
-        public async Task<StaffDto?> Update(int staffId, StaffUpdateDto dto)
+        public async Task<StaffDto?> Update(Guid staffId, StaffUpdateDto dto)
         {
             var entity = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
             if (entity == null) return null;
@@ -85,7 +85,7 @@ namespace Pos.Api.BusinessStaff.Services
             return ToDto(entity);
         }
 
-        public async Task<bool> Delete(int staffId)
+        public async Task<bool> Delete(Guid staffId)
         {
             var entity = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
             if (entity == null) return false;

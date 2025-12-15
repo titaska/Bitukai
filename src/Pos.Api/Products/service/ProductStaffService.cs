@@ -11,8 +11,8 @@ public interface IProductStaffService
 {
     Task<IEnumerable<StaffDto>> GetEligibleStaffAsync(Guid productId);
     Task<ProductStaffDto> LinkStaffToProductAsync(Guid productId, ProductStaffCreateDto dto);
-    Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, int staffId, ProductStaffUpdateDto dto);
-    Task<bool> UnlinkStaffFromProductAsync(Guid productId, int staffId);
+    Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, Guid staffId, ProductStaffUpdateDto dto);
+    Task<bool> UnlinkStaffFromProductAsync(Guid productId, Guid staffId);
 }
 
 public class ProductStaffService : IProductStaffService
@@ -86,7 +86,7 @@ public class ProductStaffService : IProductStaffService
         };
     }
     
-    public async Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, int staffId, ProductStaffUpdateDto dto)
+    public async Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, Guid staffId, ProductStaffUpdateDto dto)
     {
         // Find existing ProductStaff entry
         var productStaff = await _context.ProductStaff
@@ -114,7 +114,7 @@ public class ProductStaffService : IProductStaffService
         };
     }
     
-    public async Task<bool> UnlinkStaffFromProductAsync(Guid productId, int staffId)
+    public async Task<bool> UnlinkStaffFromProductAsync(Guid productId, Guid staffId)
     {
         // Find existing ProductStaff entry
         var productStaff = await _context.ProductStaff
