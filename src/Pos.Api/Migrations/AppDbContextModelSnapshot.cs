@@ -534,4 +534,3 @@ namespace Pos.Api.Migrations
         }
     }
 }
->>>>>>> origin/main
