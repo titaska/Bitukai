@@ -56,7 +56,7 @@ namespace Pos.Api.BusinessStaff.Services
             
             return new StaffDto
             {
-                StaffId = Guid.NewGuid(),
+                StaffId = staff.staffId,
                 RegistrationNumber = staff.registrationNumber,
                 Status = staff.status,
                 FirstName = staff.firstName,
@@ -99,7 +99,7 @@ namespace Pos.Api.BusinessStaff.Services
         private static StaffDto ToDto(Staff s) =>
             new StaffDto
             {
-                StaffId = Guid.NewGuid(),
+                StaffId = s.staffId,
                 RegistrationNumber = s.registrationNumber,
                 Status = s.status,
                 FirstName = s.firstName,
