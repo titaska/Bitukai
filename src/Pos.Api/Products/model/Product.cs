@@ -42,4 +42,6 @@ public class Product
     [Column("durationMinutes")]
     public int? durationMinutes { get; set; }
     
+    public ICollection<ProductStaff> EligibleStaff { get; set; } 
+        = new List<ProductStaff>();
 }

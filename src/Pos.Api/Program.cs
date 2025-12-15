@@ -8,10 +8,9 @@ using System.Text.Json.Serialization;
 using Pos.Api.reservations.repository;
 using Pos.Api.reservations.service;
 using Pos.Api.BusinessStaff.Services;
-using Pos.Api.BusinessStaff.Services.Interfaces;
-using Pos.Api.Products.service;
 using Pos.Api.taxes.repository;
 using Pos.Api.taxes.service;
+using Pos.Api.Products.service;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -26,7 +25,6 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderLineService, OrderLineService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
-builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
@@ -41,6 +39,7 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ReservationService>();
 builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 builder.Services.AddScoped<TaxService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
 

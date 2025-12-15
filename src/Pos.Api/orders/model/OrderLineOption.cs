@@ -16,11 +16,11 @@ public class OrderLineOption
     
     //name (e.g., “Milk”)
     [Column("name")]
-    public string name { get; set; }
+    public string name { get; set; } = null!;
     
     //value (e.g., “Oat”)
     [Column("value")]
-    public string value { get; set; }
+    public string value { get; set; } = null!;
     
     [Column("priceDelta")]
     public string priceDelta { get; set; }

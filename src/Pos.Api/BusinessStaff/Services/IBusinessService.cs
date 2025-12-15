@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Pos.Api.BusinessStaff.Models.DTOs;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.Products.model;
 
-namespace Pos.Api.BusinessStaff.Services.Interfaces
+namespace Pos.Api.BusinessStaff.Services
 {
     public interface IBusinessService
     {

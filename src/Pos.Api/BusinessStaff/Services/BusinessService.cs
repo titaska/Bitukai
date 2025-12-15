@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Context;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Models;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Services
 {
@@ -30,7 +31,8 @@ namespace Pos.Api.BusinessStaff.Services
                     Location = b.Location,
                     Phone = b.Phone,
                     Email = b.Email,
-                    CurrencyCode = b.CurrencyCode
+                    CurrencyCode = b.CurrencyCode,
+                    Type = b.Type
                 })
                 .ToListAsync();
         }
@@ -48,7 +50,8 @@ namespace Pos.Api.BusinessStaff.Services
                 Location = b.Location,
                 Phone = b.Phone,
                 Email = b.Email,
-                CurrencyCode = b.CurrencyCode
+                CurrencyCode = b.CurrencyCode,
+                Type = b.Type
             };
         }
 
@@ -56,13 +59,14 @@ namespace Pos.Api.BusinessStaff.Services
         {
             var entity = new Business
             {
-                RegistrationNumber = dto.RegistrationNumber,
+                RegistrationNumber = Guid.NewGuid().ToString(),
                 VatCode = dto.VatCode,
                 Name = dto.Name,
                 Location = dto.Location,
                 Phone = dto.Phone,
                 Email = dto.Email,
-                CurrencyCode = dto.CurrencyCode
+                CurrencyCode = dto.CurrencyCode,
+                Type = dto.Type
             };
 
             _context.Businesses.Add(entity);
@@ -83,6 +87,7 @@ namespace Pos.Api.BusinessStaff.Services
             entity.Phone = dto.Phone;
             entity.Email = dto.Email;
             entity.CurrencyCode = dto.CurrencyCode;
+            entity.Type = dto.Type;
 
             await _context.SaveChangesAsync();
             return true;

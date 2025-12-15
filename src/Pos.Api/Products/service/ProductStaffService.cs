@@ -4,15 +4,15 @@ namespace Pos.Api.Products.service;
 using Pos.Api.Context;
 using Pos.Api.Products.dto;
 using Pos.Api.Products.model;
-using Pos.Api.BusinessStaff.Models.DTOs;
+using Pos.Api.BusinessStaff.dto;
 using Pos.Api.BusinessStaff.Models;
 
 public interface IProductStaffService
 {
     Task<IEnumerable<StaffDto>> GetEligibleStaffAsync(Guid productId);
     Task<ProductStaffDto> LinkStaffToProductAsync(Guid productId, ProductStaffCreateDto dto);
-    Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, int staffId, ProductStaffUpdateDto dto);
-    Task<bool> UnlinkStaffFromProductAsync(Guid productId, int staffId);
+    Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, Guid staffId, ProductStaffUpdateDto dto);
+    Task<bool> UnlinkStaffFromProductAsync(Guid productId, Guid staffId);
 }
 
 public class ProductStaffService : IProductStaffService
@@ -34,18 +34,18 @@ public class ProductStaffService : IProductStaffService
 
         // Step 2: Get all Staff entities that match those staffIds and are ACTIVE
         var staffList = await _context.Staff
-            .Where(s => staffIds.Contains(s.StaffId) && s.Status == StaffStatus.ACTIVE)
+            .Where(s => staffIds.Contains(s.staffId) && s.status == StaffStatus.ACTIVE)
             .Select(s => new StaffDto
             {
-                StaffId = s.StaffId,
-                RegistrationNumber = s.RegistrationNumber,
-                Status = s.Status,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                PhoneNumber = s.PhoneNumber,
-                Role = s.Role,
-                HireDate = s.HireDate
+                StaffId = s.staffId,
+                RegistrationNumber = s.registrationNumber,
+                Status = s.status,
+                FirstName = s.firstName,
+                LastName = s.lastName,
+                Email = s.email,
+                PhoneNumber = s.phoneNumber,
+                Role = s.role,
+                HireDate = s.hireDate
             })
             .ToListAsync();
 
@@ -54,7 +54,7 @@ public class ProductStaffService : IProductStaffService
     
     public async Task<ProductStaffDto> LinkStaffToProductAsync(Guid productId, ProductStaffCreateDto dto)
     {
-        var staffExists = await _context.Staff.AnyAsync(s => s.StaffId == dto.staffId && s.Status == StaffStatus.ACTIVE);
+        var staffExists = await _context.Staff.AnyAsync(s => s.staffId == dto.staffId && s.status == StaffStatus.ACTIVE);
         if (!staffExists)
         {
             throw new InvalidOperationException("Staff not found or not active.");
@@ -86,7 +86,7 @@ public class ProductStaffService : IProductStaffService
         };
     }
     
-    public async Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, int staffId, ProductStaffUpdateDto dto)
+    public async Task<ProductStaffDto?> UpdateProductStaffAsync(Guid productId, Guid staffId, ProductStaffUpdateDto dto)
     {
         // Find existing ProductStaff entry
         var productStaff = await _context.ProductStaff
@@ -114,7 +114,7 @@ public class ProductStaffService : IProductStaffService
         };
     }
     
-    public async Task<bool> UnlinkStaffFromProductAsync(Guid productId, int staffId)
+    public async Task<bool> UnlinkStaffFromProductAsync(Guid productId, Guid staffId)
     {
         // Find existing ProductStaff entry
         var productStaff = await _context.ProductStaff

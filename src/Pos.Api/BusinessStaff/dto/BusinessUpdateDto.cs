@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Pos.Api.BusinessStaff.Models;
 
-namespace Pos.Api.BusinessStaff.Models.DTOs
+namespace Pos.Api.BusinessStaff.dto
 {
     public class BusinessUpdateDto
     {
@@ -19,5 +20,8 @@ namespace Pos.Api.BusinessStaff.Models.DTOs
         [Required]
         [MaxLength(3)]
         public string CurrencyCode { get; set; } = null!;
+        
+        [Required]
+        public BusinessType Type { get; set; }
     }
 }
