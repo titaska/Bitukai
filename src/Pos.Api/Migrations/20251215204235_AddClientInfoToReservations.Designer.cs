@@ -12,8 +12,8 @@ using Pos.Api.Context;
 namespace Pos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251215124913_Initial")]
-    partial class Initial
+    [Migration("20251215204235_AddClientInfoToReservations")]
+    partial class AddClientInfoToReservations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -402,18 +402,24 @@ namespace Pos.Api.Migrations
                         .HasColumnType("text")
                         .HasColumnName("appointmentId");
 
-                    b.Property<string>("CustomerId")
+                    b.Property<string>("ClientName")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("customerId");
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientPhone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClientSurname")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("integer")
                         .HasColumnName("durationMinutes");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
                         .HasColumnName("employeeId");
 
                     b.Property<string>("Notes")
