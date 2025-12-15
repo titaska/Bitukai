@@ -24,530 +24,496 @@ namespace Pos.Api.Migrations
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Business", b =>
-            {
-                b.Property<string>("RegistrationNumber")
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                {
+                    b.Property<string>("RegistrationNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("RegistrationNumber");
 
-                b.Property<string>("CurrencyCode")
-                    .IsRequired()
-                    .HasMaxLength(3)
-                    .HasColumnType("character varying(3)");
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("CurrencyCode");
 
-                b.Property<string>("Email")
-                    .HasColumnType("text");
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Email");
 
-                b.Property<string>("Location")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("character varying(200)");
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Location");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("character varying(200)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Name");
 
-                b.Property<string>("Phone")
-                    .HasColumnType("text");
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Phone");
 
-                b.Property<string>("Type")
-                    .IsRequired()
-                    .HasMaxLength(20)
-                    .HasColumnType("character varying(20)");
+                    b.Property<string>("VatCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("VatCode");
 
-                b.Property<string>("VatCode")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.HasKey("RegistrationNumber");
 
-                b.HasKey("RegistrationNumber");
+                    b.ToTable("Businesses", "point_of_sale");
+                });
 
-                b.ToTable("Businesses", "point_of_sale");
-            });
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Product", b =>
+                {
+                    b.Property<Guid>("productId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("ProductId");
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ServiceConfig", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                    b.Property<decimal>("basePrice")
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("BasePrice");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("Description");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("character varying(200)");
+                    b.Property<int>("durationMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("DurationMinutes");
 
-                b.Property<decimal>("Price")
-                    .HasColumnType("numeric(12,2)");
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Name");
 
-                b.HasKey("Id");
+                    b.Property<string>("registrationNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("RegistrationNumber");
 
-                b.ToTable("Services", "point_of_sale");
-            });
+                    b.Property<bool>("status")
+                        .HasColumnType("boolean")
+                        .HasColumnName("Status");
+
+                    b.Property<string>("taxCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("TaxCode");
+
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("Type");
+
+                    b.HasKey("productId");
+
+                    b.ToTable("Products", "point_of_sale");
+                });
+
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ProductStaff", b =>
+                {
+                    b.Property<Guid>("productStaffId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("ProductStaffId");
+
+                    b.Property<Guid>("productId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ProductId");
+
+                    b.Property<int>("staffId")
+                        .HasColumnType("integer")
+                        .HasColumnName("StaffId");
+
+                    b.Property<bool>("status")
+                        .HasColumnType("boolean")
+                        .HasColumnName("Status");
+
+                    b.Property<DateTime?>("valideFrom")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ValideFrom");
+
+                    b.Property<DateTime?>("valideTo")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ValideTo");
+
+                    b.HasKey("productStaffId");
+
+                    b.HasIndex("staffId");
+
+                    b.HasIndex("productId", "staffId")
+                        .IsUnique();
+
+                    b.ToTable("ProductStaff", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Staff", b =>
-            {
-                b.Property<int>("StaffId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("staffId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("StaffId");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StaffId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("staffId"));
 
-                b.Property<string>("Email")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("character varying(200)");
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Email");
 
-                b.Property<string>("FirstName")
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnType("character varying(100)");
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("FirstName");
 
-                b.Property<DateTime>("HireDate")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("LastName");
 
-                b.Property<string>("LastName")
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnType("character varying(100)");
+                    b.Property<string>("phoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("PhoneNumber");
 
-                b.Property<string>("PasswordHash")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("registrationNumber")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("RegistrationNumber");
 
-                b.Property<string>("PhoneNumber")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Status");
 
-                b.Property<string>("RegistrationNumber")
-                    .IsRequired()
-                    .HasColumnType("character varying(50)");
+                    b.HasKey("staffId");
 
-                b.Property<string>("Role")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.HasIndex("registrationNumber");
 
-                b.Property<string>("Status")
-                    .IsRequired()
-                    .HasColumnType("text");
-
-                b.HasKey("StaffId");
-
-                b.HasIndex("RegistrationNumber");
-
-                b.ToTable("Staff", "point_of_sale");
-            });
-
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.StaffServiceAssignment", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
-
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                b.Property<decimal>("Revenue")
-                    .HasColumnType("numeric(12,2)");
-
-                b.Property<int>("ServiceId")
-                    .HasColumnType("integer");
-
-                b.Property<int>("StaffId")
-                    .HasColumnType("integer");
-
-                b.HasKey("Id");
-
-                b.HasIndex("ServiceId");
-
-                b.HasIndex("StaffId", "ServiceId")
-                    .IsUnique();
-
-                b.ToTable("StaffServiceAssignments", "point_of_sale");
-            });
+                    b.ToTable("Staff", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.Order", b =>
-            {
-                b.Property<Guid>("orderId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderId");
+                {
+                    b.Property<Guid>("orderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderId");
 
-                b.Property<DateTime?>("closedAt")
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("closedAt");
+                    b.Property<DateTime?>("closedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("closedAt");
 
-                b.Property<DateTime>("createdAt")
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("createdAt");
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
 
-                b.Property<Guid?>("customerId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("customerId");
+                    b.Property<Guid?>("customerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("customerId");
 
-                b.Property<decimal>("discountAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("discountAmount");
+                    b.Property<decimal>("discountAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("discountAmount");
 
-                b.Property<string>("registrationNumber")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("registrationNumber");
+                    b.Property<string>("registrationNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("registrationNumber");
 
-                b.Property<decimal>("serviceChargeAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("serviceChargeAmount");
+                    b.Property<decimal>("serviceChargeAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("serviceChargeAmount");
 
-                b.Property<decimal>("serviceChargePct")
-                    .HasColumnType("numeric")
-                    .HasColumnName("serviceChargePct");
+                    b.Property<decimal>("serviceChargePct")
+                        .HasColumnType("numeric")
+                        .HasColumnName("serviceChargePct");
 
-                b.Property<string>("status")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("status");
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
 
-                b.Property<decimal>("subtotalAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("subtotalAmount");
+                    b.Property<decimal>("subtotalAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("subtotalAmount");
 
-                b.Property<decimal>("taxAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("taxAmount");
+                    b.Property<decimal>("taxAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("taxAmount");
 
-                b.Property<decimal>("tipAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("tipAmount");
+                    b.Property<decimal>("tipAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("tipAmount");
 
-                b.Property<decimal>("totalDue")
-                    .HasColumnType("numeric")
-                    .HasColumnName("totalDue");
+                    b.Property<decimal>("totalDue")
+                        .HasColumnType("numeric")
+                        .HasColumnName("totalDue");
 
-                b.HasKey("orderId");
+                    b.HasKey("orderId");
 
-                b.ToTable("Orders", "point_of_sale");
-            });
+                    b.ToTable("Orders", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.OrderLine", b =>
-            {
-                b.Property<Guid>("orderLineId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderLineId");
+                {
+                    b.Property<Guid>("orderLineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderLineId");
 
-                b.Property<string>("appointmentId")
-                    .HasColumnType("text")
-                    .HasColumnName("appointmentId");
+                    b.Property<Guid?>("appointmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("appointmentId");
 
-                b.Property<string>("assignedStaffId")
-                    .HasColumnType("text")
-                    .HasColumnName("assignedStaffId");
+                    b.Property<Guid?>("assignedStaffId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assignedStaffId");
 
-                b.Property<string>("notes")
-                    .HasColumnType("text")
-                    .HasColumnName("notes");
+                    b.Property<string>("notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
 
-                b.Property<Guid>("orderId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderId");
+                    b.Property<Guid>("orderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderId");
 
-                b.Property<Guid>("productId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("productId");
+                    b.Property<Guid>("productId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("productId");
 
-                b.Property<int>("quantity")
-                    .HasColumnType("integer")
-                    .HasColumnName("quantity");
+                    b.Property<int>("quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
 
-                b.Property<decimal>("subTotal")
-                    .HasColumnType("numeric")
-                    .HasColumnName("subTotal");
+                    b.Property<decimal>("subTotal")
+                        .HasColumnType("numeric")
+                        .HasColumnName("subTotal");
 
-                b.Property<decimal>("unitPrice")
-                    .HasColumnType("numeric")
-                    .HasColumnName("unitPrice");
+                    b.Property<decimal>("unitPrice")
+                        .HasColumnType("numeric")
+                        .HasColumnName("unitPrice");
 
-                b.HasKey("orderLineId");
+                    b.HasKey("orderLineId");
 
-                b.HasIndex("orderId");
+                    b.HasIndex("orderId");
 
-                b.ToTable("OrderLines", "point_of_sale");
-            });
+                    b.ToTable("OrderLines", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.OrderLineOption", b =>
-            {
-                b.Property<Guid>("orderLineOptionId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderLineOptionId");
+                {
+                    b.Property<Guid>("orderLineOptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderLineOptionId");
 
-                b.Property<string>("name")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("name");
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                b.Property<Guid>("orderLineId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderLineId");
+                    b.Property<Guid>("orderLineId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderLineId");
 
-                b.Property<string>("priceDelta")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("priceDelta");
+                    b.Property<string>("priceDelta")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("priceDelta");
 
-                b.Property<string>("value")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("value");
+                    b.Property<string>("value")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("value");
 
-                b.HasKey("orderLineOptionId");
+                    b.HasKey("orderLineOptionId");
 
-                b.ToTable("OrderLineOptions", "point_of_sale");
-            });
+                    b.ToTable("OrderLineOptions", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.OrderLineTax", b =>
-            {
-                b.Property<Guid>("orderLineTaxId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderLineTaxId");
+                {
+                    b.Property<Guid>("orderLineTaxId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderLineTaxId");
 
-                b.Property<Guid>("orderLineId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("orderLineId");
+                    b.Property<Guid>("orderLineId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("orderLineId");
 
-                b.Property<decimal>("taxAmount")
-                    .HasColumnType("numeric")
-                    .HasColumnName("taxAmount");
+                    b.Property<decimal>("taxAmount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("taxAmount");
 
-                b.Property<string>("taxCode")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("taxCode");
+                    b.Property<string>("taxCode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("taxCode");
 
-                b.Property<decimal>("taxPercentage")
-                    .HasColumnType("numeric")
-                    .HasColumnName("taxPercentage");
+                    b.Property<decimal>("taxPercentage")
+                        .HasColumnType("numeric")
+                        .HasColumnName("taxPercentage");
 
-                b.HasKey("orderLineTaxId");
+                    b.HasKey("orderLineTaxId");
 
-                b.ToTable("OrderLineTaxes", "point_of_sale");
-            });
-
-            modelBuilder.Entity("Pos.Api.Products.model.Product", b =>
-            {
-                b.Property<Guid>("productId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("productId");
-
-                b.Property<decimal>("basePrice")
-                    .HasColumnType("numeric")
-                    .HasColumnName("basePrice");
-
-                b.Property<string>("description")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("description");
-
-                b.Property<int?>("durationMinutes")
-                    .HasColumnType("integer")
-                    .HasColumnName("durationMinutes");
-
-                b.Property<string>("name")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("name");
-
-                b.Property<string>("registrationNumber")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("registrationNumber");
-
-                b.Property<bool>("status")
-                    .HasColumnType("boolean")
-                    .HasColumnName("status");
-
-                b.Property<string>("taxCode")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("taxCode");
-
-                b.Property<int>("type")
-                    .HasColumnType("integer")
-                    .HasColumnName("type");
-
-                b.HasKey("productId");
-
-                b.ToTable("Products", "point_of_sale");
-            });
-
-            modelBuilder.Entity("Pos.Api.Products.model.ProductStaff", b =>
-            {
-                b.Property<Guid>("productStaffId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("productStaffId");
-
-                b.Property<Guid>("productId")
-                    .HasColumnType("uuid")
-                    .HasColumnName("productId");
-
-                b.Property<int>("staffId")
-                    .HasColumnType("integer")
-                    .HasColumnName("staffId");
-
-                b.Property<bool>("status")
-                    .HasColumnType("boolean")
-                    .HasColumnName("status");
-
-                b.Property<DateTime?>("valideFrom")
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("valideFrom");
-
-                b.Property<DateTime?>("valideTo")
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("valideTo");
-
-                b.HasKey("productStaffId");
-
-                b.ToTable("ProductStaff", "point_of_sale");
-            });
+                    b.ToTable("OrderLineTaxes", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.reservations.model.Reservation", b =>
-            {
-                b.Property<string>("AppointmentId")
-                    .HasColumnType("text")
-                    .HasColumnName("appointmentId");
+                {
+                    b.Property<string>("AppointmentId")
+                        .HasColumnType("text")
+                        .HasColumnName("appointmentId");
 
-                b.Property<string>("CustomerId")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("customerId");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("customerId");
 
-                b.Property<int>("DurationMinutes")
-                    .HasColumnType("integer")
-                    .HasColumnName("durationMinutes");
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("durationMinutes");
 
-                b.Property<string>("EmployeeId")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("employeeId");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("employeeId");
 
-                b.Property<string>("Notes")
-                    .HasColumnType("text")
-                    .HasColumnName("notes");
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
 
-                b.Property<string>("OrderId")
-                    .HasColumnType("text")
-                    .HasColumnName("orderId");
+                    b.Property<string>("OrderId")
+                        .HasColumnType("text")
+                        .HasColumnName("orderId");
 
-                b.Property<string>("RegistrationNumber")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("registrationNumber");
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("registrationNumber");
 
-                b.Property<string>("ServiceProductId")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("serviceProductId");
+                    b.Property<string>("ServiceProductId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("serviceProductId");
 
-                b.Property<DateTime>("StartTime")
-                    .HasColumnType("timestamp with time zone")
-                    .HasColumnName("startTime");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("startTime");
 
-                b.Property<string>("Status")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("status");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
 
-                b.HasKey("AppointmentId");
+                    b.HasKey("AppointmentId");
 
-                b.ToTable("reservations", "point_of_sale");
-            });
+                    b.ToTable("reservations", "point_of_sale");
+                });
 
             modelBuilder.Entity("Pos.Api.taxes.model.Tax", b =>
-            {
-                b.Property<Guid>("id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uuid")
-                    .HasColumnName("id");
+                {
+                    b.Property<string>("id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
 
-                b.Property<string>("description")
-                    .HasColumnType("text")
-                    .HasColumnName("description");
+                    b.Property<string>("description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
-                b.Property<string>("name")
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasColumnName("name");
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                b.Property<decimal>("percentage")
-                    .HasColumnType("numeric")
-                    .HasColumnName("percentage");
+                    b.Property<decimal>("percentage")
+                        .HasColumnType("numeric")
+                        .HasColumnName("percentage");
 
-                b.HasKey("id");
+                    b.HasKey("id");
 
-                b.ToTable("taxes", "point_of_sale");
-            });
+                    b.HasIndex("name")
+                        .IsUnique();
+
+                    b.ToTable("taxes", "point_of_sale");
+                });
+
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ProductStaff", b =>
+                {
+                    b.HasOne("Pos.Api.BusinessStaff.Models.Product", "product")
+                        .WithMany("EligibleStaff")
+                        .HasForeignKey("productId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pos.Api.BusinessStaff.Models.Staff", "staff")
+                        .WithMany("serviceAssignments")
+                        .HasForeignKey("staffId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
+
+                    b.Navigation("staff");
+                });
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Staff", b =>
-            {
-                b.HasOne("Pos.Api.BusinessStaff.Models.Business", "Business")
-                    .WithMany("StaffMembers")
-                    .HasForeignKey("RegistrationNumber")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Pos.Api.BusinessStaff.Models.Business", "Business")
+                        .WithMany("StaffMembers")
+                        .HasForeignKey("registrationNumber")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Business");
-            });
-
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.StaffServiceAssignment", b =>
-            {
-                b.HasOne("Pos.Api.BusinessStaff.Models.ServiceConfig", "Service")
-                    .WithMany("StaffAssignments")
-                    .HasForeignKey("ServiceId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.HasOne("Pos.Api.BusinessStaff.Models.Staff", "Staff")
-                    .WithMany("ServiceAssignments")
-                    .HasForeignKey("StaffId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.Navigation("Service");
-                b.Navigation("Staff");
-            });
+                    b.Navigation("Business");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.OrderLine", b =>
-            {
-                b.HasOne("Pos.Api.Orders.Model.Order", null)
-                    .WithMany("Lines")
-                    .HasForeignKey("orderId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                {
+                    b.HasOne("Pos.Api.Orders.Model.Order", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("orderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Business", b =>
-            {
-                b.Navigation("StaffMembers");
-            });
+                {
+                    b.Navigation("StaffMembers");
+                });
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ServiceConfig", b =>
-            {
-                b.Navigation("StaffAssignments");
-            });
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Product", b =>
+                {
+                    b.Navigation("EligibleStaff");
+                });
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Staff", b =>
-            {
-                b.Navigation("ServiceAssignments");
-            });
+                {
+                    b.Navigation("serviceAssignments");
+                });
 
             modelBuilder.Entity("Pos.Api.Orders.Model.Order", b =>
-            {
-                b.Navigation("Lines");
-            });
+                {
+                    b.Navigation("Lines");
+                });
 #pragma warning restore 612, 618
         }
     }

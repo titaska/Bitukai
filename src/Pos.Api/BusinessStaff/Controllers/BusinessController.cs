@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.BusinessStaff.Services;
 
 
 namespace Pos.Api.BusinessStaff.Controllers

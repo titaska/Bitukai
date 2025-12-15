@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Pos.Api.BusinessStaff.Models;
 
-namespace Pos.Api.BusinessStaff.Models.DTOs
+namespace Pos.Api.BusinessStaff.dto
 {
     public class StaffDto
     {
@@ -15,7 +15,6 @@ namespace Pos.Api.BusinessStaff.Models.DTOs
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
-        public StaffRole Role { get; set; }
-        public DateTime HireDate { get; set; }
     }
 }
+

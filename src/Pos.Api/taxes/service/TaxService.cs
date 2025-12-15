@@ -7,64 +7,64 @@ namespace Pos.Api.taxes.service
     public class TaxService
     {
         private readonly ITaxRepository _repo;
-
+        
         public TaxService(ITaxRepository repo)
         {
             _repo = repo;
         }
-
+        
         public async Task<List<TaxDto>> GetAllAsync()
         {
             var list = await _repo.GetAllAsync();
             return list.Select(MapToDto).ToList();
         }
-
-        public async Task<TaxDto?> GetByIdAsync(Guid id)
+        
+        public async Task<TaxDto?> GetByIdAsync(string id)
         {
             var tax = await _repo.GetByIdAsync(id);
             return tax == null ? null : MapToDto(tax);
         }
-
+        
         public async Task<TaxDto> CreateAsync(TaxCreateDto dto)
         {
             var tax = new Tax
             {
-                Name = dto.Name,
-                Description = dto.Description,
-                Percentage = dto.Percentage
+                name = dto.name,
+                description = dto.description,
+                percentage = dto.percentage
             };
-
+            
             await _repo.CreateAsync(tax);
             return MapToDto(tax);
         }
 
-        public async Task UpdateAsync(Guid id, TaxCreateDto dto)
+        public async Task UpdateAsync(string id, TaxCreateDto dto)
         {
             var tax = await _repo.GetByIdAsync(id)
                 ?? throw new Exception("Tax not found");
 
-            tax.Name = dto.Name;
-            tax.Description = dto.Description;
-            tax.Percentage = dto.Percentage;
+            tax.name = dto.name;
+            tax.description = dto.description;
+            tax.percentage = dto.percentage;
 
             await _repo.UpdateAsync(tax);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(string id)
         {
             var tax = await _repo.GetByIdAsync(id)
                 ?? throw new Exception("Tax not found");
-
+            
             await _repo.DeleteAsync(tax);
         }
-
-        private static TaxDto MapToDto(Tax tax) =>
+        
+        private TaxDto MapToDto(Tax tax) =>
             new TaxDto
             {
-                Id = tax.Id,
-                Name = tax.Name,
-                Description = tax.Description,
-                Percentage = tax.Percentage
+                id = tax.id,
+                name = tax.name,
+                description = tax.description,
+                percentage = tax.percentage
             };
     }
 }

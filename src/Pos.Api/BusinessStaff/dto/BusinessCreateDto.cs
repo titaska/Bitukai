@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace Pos.Api.BusinessStaff.Models.DTOs
+namespace Pos.Api.BusinessStaff.dto
 {
     public class BusinessCreateDto
     {

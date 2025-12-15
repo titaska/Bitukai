@@ -8,15 +8,15 @@ public class Tax
 {
     [Key]
     [Column("id")]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public string id { get; set; } = Guid.NewGuid().ToString();
 
     [Required]
     [Column("name")]
-    public string Name { get; set; } = string.Empty;
+    public string name { get; set; } = string.Empty;
 
     [Column("description")]
-    public string? Description { get; set; }
+    public string? description { get; set; }
 
     [Column("percentage")]
-    public decimal Percentage { get; set; }
+    public decimal percentage { get; set; }
 }

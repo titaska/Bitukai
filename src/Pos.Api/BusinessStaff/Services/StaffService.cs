@@ -1,140 +1,82 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Context;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
 using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.Services
 {
     public class StaffService : IStaffService
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _db;
+        public StaffService(AppDbContext db) => _db = db;
 
-        public StaffService(AppDbContext context)
+        public async Task<List<StaffDto>> GetAll(string registrationNumber)
         {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<StaffDto>> GetAllAsync()
-        {
-            return await _context.Staff
-                .Select(s => new StaffDto
-                {
-                    StaffId = s.StaffId,
-                    RegistrationNumber = s.RegistrationNumber,
-                    Status = s.Status,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                    Email = s.Email,
-                    PhoneNumber = s.PhoneNumber,
-                    Role = s.Role,
-                    HireDate = s.HireDate
-                })
+            var entities = await _db.Staff
+                .Where(s => s.registrationNumber == registrationNumber)
                 .ToListAsync();
+
+            return entities.Select(ToDto).ToList();
         }
 
-        public async Task<IEnumerable<StaffDto>> GetByBusinessAsync(string registrationNumber)
+        public async Task<StaffDto?> GetById(int staffId)
         {
-            return await _context.Staff
-                .Where(s => s.RegistrationNumber == registrationNumber)
-                .Select(s => new StaffDto
-                {
-                    StaffId = s.StaffId,
-                    RegistrationNumber = s.RegistrationNumber,
-                    Status = s.Status,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                    Email = s.Email,
-                    PhoneNumber = s.PhoneNumber,
-                    Role = s.Role,
-                    HireDate = s.HireDate
-                })
-                .ToListAsync();
+            var s = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
+            return s == null ? null : ToDto(s);
         }
 
-        public async Task<StaffDto?> GetByIdAsync(int staffId)
+        public async Task<StaffDto> Create(StaffCreateDto dto)
         {
-            var s = await _context.Staff.FindAsync(staffId);
-            if (s == null) return null;
-
-            return new StaffDto
-            {
-                StaffId = s.StaffId,
-                RegistrationNumber = s.RegistrationNumber,
-                Status = s.Status,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                PhoneNumber = s.PhoneNumber,
-                Role = s.Role,
-                HireDate = s.HireDate
-            };
-        }
-
-        public async Task<StaffDto> CreateAsync(StaffCreateDto dto)
-        {
-            var defaultBusiness = await _context.Businesses.FirstOrDefaultAsync();
-            if (defaultBusiness == null)
-            {
-                throw new InvalidOperationException(
-                    "No Business found in database. Cannot create staff without associated Business.");
-            }
-
             var entity = new Staff
             {
-                RegistrationNumber = defaultBusiness.RegistrationNumber, // automatiškai
-                Status = dto.Status,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                PasswordHash = dto.PasswordHash,
-                Role = dto.Role,
-                HireDate = DateTime.SpecifyKind(dto.HireDate, DateTimeKind.Utc)
+                registrationNumber = dto.RegistrationNumber,
+                status = dto.Status,
+                firstName = dto.FirstName,
+                lastName = dto.LastName,
+                email = dto.Email,
+                phoneNumber = dto.PhoneNumber
             };
 
-            _context.Staff.Add(entity);
-            await _context.SaveChangesAsync();
-
-            return await GetByIdAsync(entity.StaffId)
-                   ?? throw new Exception("Failed to create staff");
+            _db.Staff.Add(entity);
+            await _db.SaveChangesAsync();
+            return ToDto(entity);
         }
 
-        public async Task<bool> UpdateAsync(int staffId, StaffUpdateDto dto)
+        public async Task<StaffDto?> Update(int staffId, StaffUpdateDto dto)
         {
-            var entity = await _context.Staff.FindAsync(staffId);
+            var entity = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
+            if (entity == null) return null;
+
+            entity.status = dto.Status;
+            entity.firstName = dto.FirstName;
+            entity.lastName = dto.LastName;
+            entity.email = dto.Email;
+            entity.phoneNumber = dto.PhoneNumber;
+
+            await _db.SaveChangesAsync();
+            return ToDto(entity);
+        }
+
+        public async Task<bool> Delete(int staffId)
+        {
+            var entity = await _db.Staff.FirstOrDefaultAsync(x => x.staffId == staffId);
             if (entity == null) return false;
 
-            entity.Status = dto.Status;
-            entity.FirstName = dto.FirstName;
-            entity.LastName = dto.LastName;
-            entity.Email = dto.Email;
-            entity.PhoneNumber = dto.PhoneNumber;
+            _db.Staff.Remove(entity);
+            await _db.SaveChangesAsync();
+            return true;
+        }
 
-            if (!string.IsNullOrWhiteSpace(dto.PasswordHash))
+        private static StaffDto ToDto(Staff s) =>
+            new StaffDto
             {
-                entity.PasswordHash = dto.PasswordHash;
-            }
-
-            entity.Role = dto.Role;
-            entity.HireDate = DateTime.SpecifyKind(dto.HireDate, DateTimeKind.Utc);
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(int staffId)
-        {
-            var entity = await _context.Staff.FindAsync(staffId);
-            if (entity == null) return false;
-
-            _context.Staff.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+                StaffId = s.staffId,
+                RegistrationNumber = s.registrationNumber,
+                Status = s.status,
+                FirstName = s.firstName,
+                LastName = s.lastName,
+                Email = s.email,
+                PhoneNumber = s.phoneNumber
+            };
     }
 }

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Context;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.Services

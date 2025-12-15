@@ -1,10 +1,8 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Orders.Model;
 using Pos.Api.taxes.model;
 using Pos.Api.reservations.model;
 using Pos.Api.BusinessStaff.Models;
-using Pos.Api.Products.model;
 
 namespace Pos.Api.Context;
 
@@ -12,21 +10,19 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<Tax> Taxes { get; set; }
+    public DbSet<Tax> Taxes { get; set; } = null!;
 
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderLine> OrderLines { get; set; }
-    public DbSet<OrderLineOption> OrderLineOptions { get; set; }
-    public DbSet<OrderLineTax> OrderLineTaxes { get; set; }
-    public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderLine> OrderLines { get; set; } = null!;
+    public DbSet<OrderLineOption> OrderLineOptions { get; set; } = null!;
+    public DbSet<OrderLineTax> OrderLineTaxes { get; set; } = null!;
+    public DbSet<Reservation> Reservations { get; set; } = null!;
 
-    public DbSet<Product> Products { get; set; }
-    public DbSet<ProductStaff> ProductStaff { get; set; }
+    public DbSet<Product> Products { get; set; } = null!;
+    public DbSet<ProductStaff> ProductStaff { get; set; } = null!;
 
-    public DbSet<Business> Businesses => Set<Business>();
-    public DbSet<Staff> Staff => Set<Staff>();
-    public DbSet<ServiceConfig> Services => Set<ServiceConfig>();
-    public DbSet<StaffServiceAssignment> StaffServiceAssignments => Set<StaffServiceAssignment>();
+    public DbSet<Business> Businesses { get; set; } = null!;
+    public DbSet<Staff> Staff { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,104 +33,168 @@ public class AppDbContext : DbContext
             .Property(o => o.status)
             .HasConversion<string>();
 
-        // BUSINESS
         modelBuilder.Entity<Business>(entity =>
         {
             entity.HasKey(b => b.RegistrationNumber);
 
             entity.Property(b => b.RegistrationNumber)
+                .HasColumnName("RegistrationNumber")
                 .HasMaxLength(50);
 
             entity.Property(b => b.VatCode)
+                .HasColumnName("VatCode")
                 .IsRequired()
                 .HasMaxLength(50);
 
             entity.Property(b => b.Name)
+                .HasColumnName("Name")
                 .IsRequired()
                 .HasMaxLength(200);
 
             entity.Property(b => b.Location)
+                .HasColumnName("Location")
                 .IsRequired()
                 .HasMaxLength(200);
 
             entity.Property(b => b.CurrencyCode)
+                .HasColumnName("CurrencyCode")
                 .IsRequired()
                 .HasMaxLength(3);
-
-            entity.Property(b => b.Type)
-                .HasConversion(
-                    v => v.ToString().ToLowerInvariant(),
-                    v => Enum.Parse<BusinessType>(v, true))
-                .HasMaxLength(20)
-                .IsRequired();
         });
 
-        // STAFF
         modelBuilder.Entity<Staff>(entity =>
         {
-            entity.HasKey(s => s.StaffId);
+            entity.ToTable("Staff");
+
+            entity.HasKey(s => s.staffId);
+
+            entity.Property(s => s.staffId)
+                .HasColumnName("StaffId");
+
+            entity.Property(s => s.registrationNumber)
+                .HasColumnName("RegistrationNumber")
+                .IsRequired();
+
+            entity.Property(s => s.status)
+                .HasColumnName("Status")
+                .HasConversion<string>()
+                .IsRequired();
+
+            entity.Property(s => s.firstName)
+                .HasColumnName("FirstName")
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(s => s.lastName)
+                .HasColumnName("LastName")
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(s => s.email)
+                .HasColumnName("Email")
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(s => s.phoneNumber)
+                .HasColumnName("PhoneNumber")
+                .IsRequired()
+                .HasMaxLength(50);
 
             entity.HasOne(s => s.Business)
                 .WithMany(b => b.StaffMembers)
-                .HasForeignKey(s => s.RegistrationNumber)
+                .HasForeignKey(s => s.registrationNumber)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            entity.Property(s => s.Status)
-                .HasConversion<string>()
-                .IsRequired();
-
-            entity.Property(s => s.Role)
-                .HasConversion<string>()
-                .IsRequired();
-
-            entity.Property(s => s.Email)
-                .IsRequired()
-                .HasMaxLength(200);
-
-            entity.Property(s => s.FirstName)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            entity.Property(s => s.LastName)
-                .IsRequired()
-                .HasMaxLength(100);
         });
 
-        // SERVICES
-        modelBuilder.Entity<ServiceConfig>(entity =>
+        modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(x => x.Id);
+            entity.HasKey(p => p.productId);
 
-            entity.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(200);
-
-            entity.Property(x => x.Price)
-                .HasColumnType("numeric(12,2)")
+            entity.Property(p => p.productId)
+                .HasColumnName("ProductId")
                 .IsRequired();
-        });
 
-        // STAFF <-> SERVICES (Assignments)
-        modelBuilder.Entity<StaffServiceAssignment>(entity =>
-        {
-            entity.HasKey(x => x.Id);
+            entity.Property(p => p.registrationNumber)
+                .HasColumnName("RegistrationNumber")
+                .HasMaxLength(50)
+                .IsRequired();
 
-            entity.Property(x => x.Revenue)
+            entity.Property(p => p.type)
+                .HasColumnName("Type")
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(p => p.name)
+                .HasColumnName("Name")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(p => p.description)
+                .HasColumnName("Description")
+                .HasMaxLength(1000);
+
+            entity.Property(p => p.basePrice)
+                .HasColumnName("BasePrice")
                 .HasColumnType("numeric(12,2)")
                 .IsRequired();
 
-            entity.HasOne(x => x.Staff)
-                .WithMany(s => s.ServiceAssignments)
-                .HasForeignKey(x => x.StaffId)
+            entity.Property(p => p.taxCode)
+                .HasColumnName("TaxCode")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(p => p.status)
+                .HasColumnName("Status")
+                .IsRequired();
+
+            entity.Property(p => p.durationMinutes)
+                .HasColumnName("DurationMinutes")
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<ProductStaff>(entity =>
+        {
+            entity.HasKey(ps => ps.productStaffId);
+
+            entity.Property(ps => ps.productStaffId)
+                .HasColumnName("ProductStaffId");
+
+            entity.Property(ps => ps.productId)
+                .HasColumnName("ProductId")
+                .IsRequired();
+
+            entity.Property(ps => ps.staffId)
+                .HasColumnName("StaffId")
+                .IsRequired();
+
+            entity.Property(ps => ps.status)
+                .HasColumnName("Status")
+                .IsRequired();
+
+            entity.Property(ps => ps.valideFrom)
+                .HasColumnName("ValideFrom");
+
+            entity.Property(ps => ps.valideTo)
+                .HasColumnName("ValideTo");
+
+            entity.HasOne(ps => ps.product)
+                .WithMany(p => p.EligibleStaff)
+                .HasForeignKey(ps => ps.productId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(x => x.Service)
-                .WithMany(s => s.StaffAssignments)
-                .HasForeignKey(x => x.ServiceId)
+            entity.HasOne(ps => ps.staff)
+                .WithMany(s => s.serviceAssignments)
+                .HasForeignKey(ps => ps.staffId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasIndex(x => new { x.StaffId, x.ServiceId })
+            entity.HasIndex(ps => new { ps.productId, ps.staffId })
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<Tax>(entity =>
+        {
+            entity.HasIndex(t => t.name).IsUnique();
         });
     }
 }

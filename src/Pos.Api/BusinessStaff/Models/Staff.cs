@@ -1,34 +1,47 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pos.Api.BusinessStaff.Models
 {
+    [Table("Staff")]
     public class Staff
     {
         // PK
-        public int StaffId { get; set; }
+        [Key]
+        [Column("staffId")]
+        public int staffId { get; set; }
 
-        // FK -> Business
-        public string RegistrationNumber { get; set; } = null!;
+        // FK -> Business (Business.registrationNumber)
+        [Required]
+        [Column("registrationNumber")]
+        public string registrationNumber { get; set; } = null!;
 
-        public StaffStatus Status { get; set; }
+        // enum -> string (pagal tavo ERD: status yra string)
+        [Required]
+        [Column("status")]
+        public StaffStatus status { get; set; }
 
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
+        [Required]
+        [Column("firstName")]
+        public string firstName { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
-        public StaffRole Role { get; set; }
+        [Required]
+        [Column("lastName")]
+        public string lastName { get; set; } = null!;
 
-        public DateTime HireDate { get; set; }
+        [Required]
+        [Column("email")]
+        public string email { get; set; } = null!;
 
-        // Navigation
+        [Required]
+        [Column("phoneNumber")]
+        public string phoneNumber { get; set; } = null!;
+
+        [ForeignKey(nameof(registrationNumber))]
         public Business Business { get; set; } = null!;
 
-        public ICollection<StaffServiceAssignment> ServiceAssignments { get; set; }
-            = new List<StaffServiceAssignment>();
+        public ICollection<ProductStaff> serviceAssignments { get; set; } = new List<ProductStaff>();
     }
 }

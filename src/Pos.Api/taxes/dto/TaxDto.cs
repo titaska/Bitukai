@@ -2,10 +2,10 @@ namespace Pos.Api.taxes.dto
 {
     public class TaxDto
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public decimal Percentage { get; set; }
+        public string id { get; set; } = null!;
+        public string name { get; set; } = string.Empty;
+        public string? description { get; set; }
+        public decimal percentage { get; set; }
     }
 
 }
