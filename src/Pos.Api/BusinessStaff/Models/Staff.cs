@@ -1,31 +1,62 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Models
 {
+    [Table("Staff")]
     public class Staff
     {
         // PK
-        public int StaffId { get; set; }
+        [Key]
+        [Column("StaffId")]
+        public Guid staffId { get; set; }
 
-        // FK -> Business
-        public string RegistrationNumber { get; set; } = null!;
+        // FK -> Business (Business.RegistrationNumber)
+        [Required]
+        [Column("RegistrationNumber")]
+        public string registrationNumber { get; set; } = null!;
 
-        public StaffStatus Status { get; set; }
+        // enum -> string
+        [Required]
+        [Column("Status")]
+        public StaffStatus status { get; set; }
 
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
+        [Required]
+        [Column("FirstName")]
+        public string firstName { get; set; } = null!;
 
-        public string PasswordHash { get; set; } = null!;
-        public StaffRole Role { get; set; }
+        [Required]
+        [Column("LastName")]
+        public string lastName { get; set; } = null!;
 
-        public DateTime HireDate { get; set; }
+        [Required]
+        [Column("Email")]
+        public string email { get; set; } = null!;
 
-        // Navigation
+        [Required]
+        [Column("PhoneNumber")]
+        public string phoneNumber { get; set; } = null!;
+
+        [Required]
+        [Column("Role")]
+        [MaxLength(50)]
+        public string role { get; set; } = null!;
+
+        [Required]
+        [Column("HireDate")]
+        public DateTime hireDate { get; set; }
+
+        [Required]
+        [Column("Password")]
+        public string Password { get; set; } = null!;
+
+        [ForeignKey(nameof(registrationNumber))]
         public Business Business { get; set; } = null!;
+
+        public ICollection<ProductStaff> productAssignments { get; set; }
+            = new List<ProductStaff>();
     }
 }

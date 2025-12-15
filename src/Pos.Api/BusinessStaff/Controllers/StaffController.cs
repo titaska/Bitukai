@@ -1,76 +1,52 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.BusinessStaff.Services;
+using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/staff")]
     public class StaffController : ControllerBase
     {
-        private readonly IStaffService _staffService;
-
-        public StaffController(IStaffService staffService)
-        {
-            _staffService = staffService;
-        }
+        private readonly IStaffService _service;
+        public StaffController(IStaffService service) => _service = service;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StaffDto>>> GetAll()
-        {
-            var staff = await _staffService.GetAllAsync();
-            return Ok(staff);
-        }
+        public async Task<ActionResult<List<StaffDto>>> GetAll([FromQuery] string registrationNumber)
+            => Ok(await _service.GetAll(registrationNumber));
 
-        [HttpGet("{staffId:int}")]
-        public async Task<ActionResult<StaffDto>> Get(int staffId)
+        [HttpGet("{staffId:Guid}")]
+        public async Task<ActionResult<StaffDto>> GetById(Guid staffId)
         {
-            var staff = await _staffService.GetByIdAsync(staffId);
-            if (staff == null) return NotFound();
-            return Ok(staff);
-        }
-
-        // Staff pagal business registrationNumber
-        [HttpGet("by-business/{registrationNumber}")]
-        public async Task<ActionResult<IEnumerable<StaffDto>>> GetByBusiness(string registrationNumber)
-        {
-            var staff = await _staffService.GetByBusinessAsync(registrationNumber);
-            return Ok(staff);
+            var item = await _service.GetById(staffId);
+            return item == null ? NotFound() : Ok(item);
         }
 
         [HttpPost]
         public async Task<ActionResult<StaffDto>> Create([FromBody] StaffCreateDto dto)
         {
-            var created = await _staffService.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { staffId = created.StaffId }, created);
+            var created = await _service.Create(dto);
+            return CreatedAtAction(nameof(GetById), new { staffId = created.StaffId }, created);
         }
         
         [HttpPost("login")]
         public async Task<ActionResult<StaffDto>> Login([FromBody] LoginRequestDto dto)
         {
-            var auth = await _staffService.AuthenticateAsync(dto.Email, dto.PasswordHash);
+            var auth = await _service.AuthenticateAsync(dto.Email, dto.Password);
             if (auth == null) return Unauthorized();
             return Ok(auth);
         }
 
-        [HttpPut("{staffId:int}")]
-        public async Task<IActionResult> Update(int staffId, [FromBody] StaffUpdateDto dto)
+        [HttpPut("{staffId:Guid}")]
+        public async Task<ActionResult<StaffDto>> Update(Guid staffId, [FromBody] StaffUpdateDto dto)
         {
-            var success = await _staffService.UpdateAsync(staffId, dto);
-            if (!success) return NotFound();
-            return NoContent();
+            var updated = await _service.Update(staffId, dto);
+            return updated == null ? NotFound() : Ok(updated);
         }
 
-        [HttpDelete("{staffId:int}")]
-        public async Task<IActionResult> Delete(int staffId)
-        {
-            var success = await _staffService.DeleteAsync(staffId);
-            if (!success) return NotFound();
-            return NoContent();
-        }
+        [HttpDelete("{staffId:Guid}")]
+        public async Task<IActionResult> Delete(Guid staffId)
+            => await _service.Delete(staffId) ? NoContent() : NotFound();
     }
 }
