@@ -76,7 +76,8 @@ public class AppDbContext : DbContext
             entity.HasKey(s => s.staffId);
 
             entity.Property(s => s.staffId)
-                .HasColumnName("StaffId");
+                .HasColumnName("StaffId")
+                .ValueGeneratedNever();
 
             entity.Property(s => s.registrationNumber)
                 .HasColumnName("RegistrationNumber")
@@ -172,7 +173,7 @@ public class AppDbContext : DbContext
 
             entity.Property(ps => ps.staffId)
                 .HasColumnName("staffId")
-                .IsRequired();
+                .ValueGeneratedNever();
 
             entity.Property(ps => ps.status)
                 .HasColumnName("status")
