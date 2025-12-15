@@ -118,7 +118,7 @@ public class ProductsController : ControllerBase
     }
     
     [HttpPut("{productId}/staff/{staffId}")]
-    public async Task<IActionResult> UpdateProductStaff(Guid productId, int staffId, [FromBody] ProductStaffUpdateDto dto)
+    public async Task<IActionResult> UpdateProductStaff(Guid productId, Guid staffId, [FromBody] ProductStaffUpdateDto dto)
     {
         var updated = await _productStaffService.UpdateProductStaffAsync(productId, staffId, dto);
         if (updated == null)
@@ -128,7 +128,7 @@ public class ProductsController : ControllerBase
     }
     
     [HttpDelete("{productId}/staff/{staffId}")]
-    public async Task<IActionResult> UnlinkStaffFromProduct(Guid productId, int staffId)
+    public async Task<IActionResult> UnlinkStaffFromProduct(Guid productId, Guid staffId)
     {
         var success = await _productStaffService.UnlinkStaffFromProductAsync(productId, staffId);
         if (!success)

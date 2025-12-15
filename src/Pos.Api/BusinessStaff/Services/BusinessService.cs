@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pos.Api.Context;
-using Pos.Api.BusinessStaff.Models.DTOs;
-using Pos.Api.BusinessStaff.Services.Interfaces;
+using Pos.Api.BusinessStaff.dto;
+using Pos.Api.BusinessStaff.Services;
 using Pos.Api.BusinessStaff.Models;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.BusinessStaff.Services
 {
@@ -58,7 +59,7 @@ namespace Pos.Api.BusinessStaff.Services
         {
             var entity = new Business
             {
-                RegistrationNumber = dto.RegistrationNumber,
+                RegistrationNumber = Guid.NewGuid().ToString(),
                 VatCode = dto.VatCode,
                 Name = dto.Name,
                 Location = dto.Location,

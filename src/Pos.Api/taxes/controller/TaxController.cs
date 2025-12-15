@@ -49,4 +49,3 @@ namespace Pos.Api.taxes.controller
     }
 }
 
-
