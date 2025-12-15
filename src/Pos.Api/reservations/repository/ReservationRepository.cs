@@ -37,10 +37,13 @@ namespace Pos.Api.reservations.repository
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<DateTime>> GetTakenSlotsAsync(string employeeId, DateTime date)
+        public async Task<List<DateTime>> GetTakenSlotsAsync(int employeeId, DateTime date)
         {
-            var startOfDay = date.Date;
-            var endOfDay = startOfDay.AddDays(1);
+            // Force UTC
+            var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
+            var startOfDay = utcDate;
+            var endOfDay = utcDate.AddDays(1);
 
             return await _db.Reservations
                 .Where(r =>
@@ -54,7 +57,8 @@ namespace Pos.Api.reservations.repository
         }
 
 
-        public async Task<bool> EmployeeIsBusy(string employeeId, DateTime start, int durationMinutes)
+
+        public async Task<bool> EmployeeIsBusy(int employeeId, DateTime start, int durationMinutes)
         {
             var end = start.AddMinutes(durationMinutes);
 

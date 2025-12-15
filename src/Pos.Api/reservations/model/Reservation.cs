@@ -22,7 +22,8 @@ namespace Pos.Api.reservations.model;
         public string ServiceProductId { get; set; } = null!; // FK → Product (SERVICE)
 
         [Column("employeeId")]
-        public string EmployeeId { get; set; } = null!; // FK → Staff
+        
+        public int EmployeeId { get; set; }
 
         [Column("startTime")]
         public DateTime StartTime { get; set; }

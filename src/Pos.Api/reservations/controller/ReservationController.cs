@@ -17,14 +17,19 @@ namespace Pos.Api.reservations.controller
             _service = service;
         }
 
+
+
+
         [HttpGet("availability")]
         public async Task<IActionResult> GetAvailability(
-        [FromQuery] string employeeId,
+        [FromQuery] int employeeId,
         [FromQuery] DateTime date)
         {
-            var takenSlots = await _service.GetTakenSlotsAsync(employeeId, date);
+            var utcDate = DateTime.SpecifyKind(date, DateTimeKind.Utc);
+            var takenSlots = await _service.GetTakenSlotsAsync(employeeId, utcDate);
             return Ok(takenSlots);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAll() =>
