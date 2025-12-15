@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pos.Api.BusinessStaff.dto;
 using Pos.Api.BusinessStaff.Services;
+using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.Controllers
 {
@@ -27,6 +28,14 @@ namespace Pos.Api.BusinessStaff.Controllers
         {
             var created = await _service.Create(dto);
             return CreatedAtAction(nameof(GetById), new { staffId = created.StaffId }, created);
+        }
+        
+        [HttpPost("login")]
+        public async Task<ActionResult<StaffDto>> Login([FromBody] LoginRequestDto dto)
+        {
+            var auth = await _service.AuthenticateAsync(dto.Email, dto.PasswordHash);
+            if (auth == null) return Unauthorized();
+            return Ok(auth);
         }
 
         [HttpPut("{staffId:int}")]

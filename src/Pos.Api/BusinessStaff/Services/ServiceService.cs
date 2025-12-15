@@ -12,28 +12,28 @@ namespace Pos.Api.BusinessStaff.Services
 
         public async Task<List<ServiceDto>> GetAll(string registrationNumber)
         {
-            var entities = await _db.Products
-                .Where(p => p.registrationNumber == registrationNumber && p.type == ProductType.SERVICE)
+            var entities = await _db.Services
+                .Where(p => p.registrationNumber == registrationNumber && p.type == ServiceType.SERVICE)
                 .ToListAsync();
 
             return entities.Select(ToDto).ToList();
         }
 
-        public async Task<ServiceDto?> GetById(Guid productId)
+        public async Task<ServiceDto?> GetById(Guid serviceId)
         {
-            var p = await _db.Products
-                .FirstOrDefaultAsync(x => x.productId == productId && x.type == ProductType.SERVICE);
+            var p = await _db.Services
+                .FirstOrDefaultAsync(x => x.serviceId == serviceId && x.type == ServiceType.SERVICE);
 
             return p == null ? null : ToDto(p);
         }
 
         public async Task<ServiceDto> Create(ServiceCreateDto dto)
         {
-            var entity = new Product
+            var entity = new Service
             {
-                productId = dto.ProductId == Guid.Empty ? Guid.NewGuid() : dto.ProductId,
+                serviceId = dto.ServiceId == Guid.Empty ? Guid.NewGuid() : dto.ServiceId,
                 registrationNumber = dto.RegistrationNumber,
-                type = ProductType.SERVICE,
+                type = ServiceType.SERVICE,
                 name = dto.Name,
                 description = dto.Description,
                 basePrice = dto.BasePrice,
@@ -42,15 +42,15 @@ namespace Pos.Api.BusinessStaff.Services
                 status = dto.Status
             };
 
-            _db.Products.Add(entity);
+            _db.Services.Add(entity);
             await _db.SaveChangesAsync();
             return ToDto(entity);
         }
 
-        public async Task<ServiceDto?> Update(Guid productId, ServiceUpdateDto dto)
+        public async Task<ServiceDto?> Update(Guid serviceId, ServiceUpdateDto dto)
         {
-            var entity = await _db.Products
-                .FirstOrDefaultAsync(x => x.productId == productId && x.type == ProductType.SERVICE);
+            var entity = await _db.Services
+                .FirstOrDefaultAsync(x => x.serviceId == serviceId && x.type == ServiceType.SERVICE);
 
             if (entity == null) return null;
 
@@ -65,22 +65,22 @@ namespace Pos.Api.BusinessStaff.Services
             return ToDto(entity);
         }
 
-        public async Task<bool> Delete(Guid productId)
+        public async Task<bool> Delete(Guid serviceId)
         {
-            var entity = await _db.Products
-                .FirstOrDefaultAsync(x => x.productId == productId && x.type == ProductType.SERVICE);
+            var entity = await _db.Services
+                .FirstOrDefaultAsync(x => x.serviceId == serviceId && x.type == ServiceType.SERVICE);
 
             if (entity == null) return false;
 
-            _db.Products.Remove(entity);
+            _db.Services.Remove(entity);
             await _db.SaveChangesAsync();
             return true;
         }
 
-        private static ServiceDto ToDto(Product p) =>
+        private static ServiceDto ToDto(Service p) =>
             new ServiceDto
             {
-                ProductId = p.productId,
+                ServiceId = p.serviceId,
                 RegistrationNumber = p.registrationNumber,
                 Type = p.type.ToString(),
                 Name = p.name,

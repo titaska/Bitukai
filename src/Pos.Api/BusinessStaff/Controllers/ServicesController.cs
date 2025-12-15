@@ -15,10 +15,10 @@ namespace Pos.Api.BusinessStaff.Controllers
         public async Task<ActionResult<List<ServiceDto>>> GetAll([FromQuery] string registrationNumber)
             => Ok(await _service.GetAll(registrationNumber));
 
-        [HttpGet("{productId}")]
-        public async Task<ActionResult<ServiceDto>> GetById(Guid productId)
+        [HttpGet("{serviceId}")]
+        public async Task<ActionResult<ServiceDto>> GetById(Guid serviceId)
         {
-            var item = await _service.GetById(productId);
+            var item = await _service.GetById(serviceId);
             return item == null ? NotFound() : Ok(item);
         }
 
@@ -26,18 +26,18 @@ namespace Pos.Api.BusinessStaff.Controllers
         public async Task<ActionResult<ServiceDto>> Create([FromBody] ServiceCreateDto dto)
         {
             var created = await _service.Create(dto);
-            return CreatedAtAction(nameof(GetById), new { productId = created.ProductId }, created);
+            return CreatedAtAction(nameof(GetById), new { serviceId = created.ServiceId }, created);
         }
 
-        [HttpPut("{productId}")]
-        public async Task<ActionResult<ServiceDto>> Update(Guid productId, [FromBody] ServiceUpdateDto dto)
+        [HttpPut("{serviceId}")]
+        public async Task<ActionResult<ServiceDto>> Update(Guid serviceId, [FromBody] ServiceUpdateDto dto)
         {
-            var updated = await _service.Update(productId, dto);
+            var updated = await _service.Update(serviceId, dto);
             return updated == null ? NotFound() : Ok(updated);
         }
 
-        [HttpDelete("{productId}")]
-        public async Task<IActionResult> Delete(Guid productId)
-            => await _service.Delete(productId) ? NoContent() : NotFound();
+        [HttpDelete("{serviceId}")]
+        public async Task<IActionResult> Delete(Guid serviceId)
+            => await _service.Delete(serviceId) ? NoContent() : NotFound();
     }
 }

@@ -12,8 +12,8 @@ using Pos.Api.Context;
 namespace Pos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251215014416_Fix")]
-    partial class Fix
+    [Migration("20251215034807_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,10 @@ namespace Pos.Api.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("Phone");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("Type");
+
                     b.Property<string>("VatCode")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -72,9 +76,9 @@ namespace Pos.Api.Migrations
                     b.ToTable("Businesses", "point_of_sale");
                 });
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Product", b =>
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Service", b =>
                 {
-                    b.Property<Guid>("productId")
+                    b.Property<Guid>("serviceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("ProductId");
@@ -84,6 +88,7 @@ namespace Pos.Api.Migrations
                         .HasColumnName("BasePrice");
 
                     b.Property<string>("description")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("Description");
@@ -120,19 +125,19 @@ namespace Pos.Api.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("Type");
 
-                    b.HasKey("productId");
+                    b.HasKey("serviceId");
 
-                    b.ToTable("Products", "point_of_sale");
+                    b.ToTable("Services", "point_of_sale");
                 });
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ProductStaff", b =>
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ServiceStaff", b =>
                 {
-                    b.Property<Guid>("productStaffId")
+                    b.Property<Guid>("serviceStaffId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("ProductStaffId");
+                        .HasColumnName("ServiceStaffId");
 
-                    b.Property<Guid>("productId")
+                    b.Property<Guid>("serviceId")
                         .HasColumnType("uuid")
                         .HasColumnName("ProductId");
 
@@ -152,14 +157,14 @@ namespace Pos.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ValideTo");
 
-                    b.HasKey("productStaffId");
+                    b.HasKey("serviceStaffId");
 
                     b.HasIndex("staffId");
 
-                    b.HasIndex("productId", "staffId")
+                    b.HasIndex("serviceId", "staffId")
                         .IsUnique();
 
-                    b.ToTable("ProductStaff", "point_of_sale");
+                    b.ToTable("ServiceStaff", "point_of_sale");
                 });
 
             modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Staff", b =>
@@ -170,6 +175,11 @@ namespace Pos.Api.Migrations
                         .HasColumnName("StaffId");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("staffId"));
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Password");
 
                     b.Property<string>("email")
                         .IsRequired()
@@ -182,6 +192,10 @@ namespace Pos.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("FirstName");
+
+                    b.Property<DateTime>("hireDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("HireDate");
 
                     b.Property<string>("lastName")
                         .IsRequired()
@@ -199,6 +213,12 @@ namespace Pos.Api.Migrations
                         .IsRequired()
                         .HasColumnType("character varying(50)")
                         .HasColumnName("RegistrationNumber");
+
+                    b.Property<string>("role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Role");
 
                     b.Property<string>("status")
                         .IsRequired()
@@ -281,12 +301,12 @@ namespace Pos.Api.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("orderLineId");
 
-                    b.Property<Guid?>("appointmentId")
-                        .HasColumnType("uuid")
+                    b.Property<string>("appointmentId")
+                        .HasColumnType("text")
                         .HasColumnName("appointmentId");
 
-                    b.Property<Guid?>("assignedStaffId")
-                        .HasColumnType("uuid")
+                    b.Property<string>("assignedStaffId")
+                        .HasColumnType("text")
                         .HasColumnName("assignedStaffId");
 
                     b.Property<string>("notes")
@@ -380,6 +400,86 @@ namespace Pos.Api.Migrations
                     b.ToTable("OrderLineTaxes", "point_of_sale");
                 });
 
+            modelBuilder.Entity("Pos.Api.Products.model.Product", b =>
+                {
+                    b.Property<Guid>("productId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("productId");
+
+                    b.Property<decimal>("basePrice")
+                        .HasColumnType("numeric")
+                        .HasColumnName("basePrice");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<int?>("durationMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("durationMinutes");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("registrationNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("registrationNumber");
+
+                    b.Property<bool>("status")
+                        .HasColumnType("boolean")
+                        .HasColumnName("status");
+
+                    b.Property<string>("taxCode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("taxCode");
+
+                    b.Property<int>("type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
+
+                    b.HasKey("productId");
+
+                    b.ToTable("Products", "point_of_sale");
+                });
+
+            modelBuilder.Entity("Pos.Api.Products.model.ProductStaff", b =>
+                {
+                    b.Property<Guid>("productStaffId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("productStaffId");
+
+                    b.Property<Guid>("productId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("productId");
+
+                    b.Property<int>("staffId")
+                        .HasColumnType("integer")
+                        .HasColumnName("staffId");
+
+                    b.Property<bool>("status")
+                        .HasColumnType("boolean")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("valideFrom")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valideFrom");
+
+                    b.Property<DateTime?>("valideTo")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valideTo");
+
+                    b.HasKey("productStaffId");
+
+                    b.ToTable("ProductStaff", "point_of_sale");
+                });
+
             modelBuilder.Entity("Pos.Api.reservations.model.Reservation", b =>
                 {
                     b.Property<string>("AppointmentId")
@@ -459,11 +559,11 @@ namespace Pos.Api.Migrations
                     b.ToTable("taxes", "point_of_sale");
                 });
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ProductStaff", b =>
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.ServiceStaff", b =>
                 {
-                    b.HasOne("Pos.Api.BusinessStaff.Models.Product", "product")
+                    b.HasOne("Pos.Api.BusinessStaff.Models.Service", "service")
                         .WithMany("EligibleStaff")
-                        .HasForeignKey("productId")
+                        .HasForeignKey("serviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -473,7 +573,7 @@ namespace Pos.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("product");
+                    b.Navigation("service");
 
                     b.Navigation("staff");
                 });
@@ -503,7 +603,7 @@ namespace Pos.Api.Migrations
                     b.Navigation("StaffMembers");
                 });
 
-            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Product", b =>
+            modelBuilder.Entity("Pos.Api.BusinessStaff.Models.Service", b =>
                 {
                     b.Navigation("EligibleStaff");
                 });

@@ -41,6 +41,10 @@ namespace Pos.Api.BusinessStaff.Models
         [MaxLength(3)]
         public string CurrencyCode { get; set; } = null!;
 
+        [Column("Type")]
+        [Required]
+        public BusinessType Type { get; set; }
+
         // Navigation: BUSINESS employs STAFF
         public ICollection<Staff> StaffMembers { get; set; } = new List<Staff>();
     }

@@ -3,6 +3,7 @@ using Pos.Api.Orders.Model;
 using Pos.Api.taxes.model;
 using Pos.Api.reservations.model;
 using Pos.Api.BusinessStaff.Models;
+using Pos.Api.Products.model;
 
 namespace Pos.Api.Context;
 
@@ -19,7 +20,9 @@ public class AppDbContext : DbContext
     public DbSet<Reservation> Reservations { get; set; } = null!;
 
     public DbSet<Product> Products { get; set; } = null!;
-    public DbSet<ProductStaff> ProductStaff { get; set; } = null!;
+    public DbSet<Service> Services { get; set; } = null!;
+    public DbSet<ServiceStaff> ServiceStaff { get; set; } = null!;
+     public DbSet<ProductStaff> ProductStaff { get; set; } = null!;
 
     public DbSet<Business> Businesses { get; set; } = null!;
     public DbSet<Staff> Staff { get; set; } = null!;
@@ -106,11 +109,11 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Product>(entity =>
+        modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(p => p.productId);
+            entity.HasKey(p => p.serviceId);
 
-            entity.Property(p => p.productId)
+            entity.Property(p => p.serviceId)
                 .HasColumnName("ProductId")
                 .IsRequired();
 
@@ -153,14 +156,14 @@ public class AppDbContext : DbContext
                 .IsRequired();
         });
 
-        modelBuilder.Entity<ProductStaff>(entity =>
+        modelBuilder.Entity<ServiceStaff>(entity =>
         {
-            entity.HasKey(ps => ps.productStaffId);
+            entity.HasKey(ps => ps.serviceStaffId);
 
-            entity.Property(ps => ps.productStaffId)
-                .HasColumnName("ProductStaffId");
+            entity.Property(ps => ps.serviceStaffId)
+                .HasColumnName("ServiceStaffId");
 
-            entity.Property(ps => ps.productId)
+            entity.Property(ps => ps.serviceId)
                 .HasColumnName("ProductId")
                 .IsRequired();
 
@@ -178,9 +181,9 @@ public class AppDbContext : DbContext
             entity.Property(ps => ps.valideTo)
                 .HasColumnName("ValideTo");
 
-            entity.HasOne(ps => ps.product)
+            entity.HasOne(ps => ps.service)
                 .WithMany(p => p.EligibleStaff)
-                .HasForeignKey(ps => ps.productId)
+                .HasForeignKey(ps => ps.serviceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(ps => ps.staff)
@@ -188,7 +191,7 @@ public class AppDbContext : DbContext
                 .HasForeignKey(ps => ps.staffId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasIndex(ps => new { ps.productId, ps.staffId })
+            entity.HasIndex(ps => new { ps.serviceId, ps.staffId })
                 .IsUnique();
         });
 

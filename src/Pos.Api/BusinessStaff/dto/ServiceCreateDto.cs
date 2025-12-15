@@ -3,7 +3,7 @@ namespace Pos.Api.BusinessStaff.dto
 {
     public class ServiceCreateDto
     {
-        public Guid ProductId { get; set; }
+        public Guid ServiceId { get; set; }
         public string RegistrationNumber { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Description { get; set; }

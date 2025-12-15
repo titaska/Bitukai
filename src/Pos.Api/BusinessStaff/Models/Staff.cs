@@ -10,38 +10,52 @@ namespace Pos.Api.BusinessStaff.Models
     {
         // PK
         [Key]
-        [Column("staffId")]
+        [Column("StaffId")]
         public int staffId { get; set; }
 
-        // FK -> Business (Business.registrationNumber)
+        // FK -> Business (Business.RegistrationNumber)
         [Required]
-        [Column("registrationNumber")]
+        [Column("RegistrationNumber")]
         public string registrationNumber { get; set; } = null!;
 
-        // enum -> string (pagal tavo ERD: status yra string)
+        // enum -> string
         [Required]
-        [Column("status")]
+        [Column("Status")]
         public StaffStatus status { get; set; }
 
         [Required]
-        [Column("firstName")]
+        [Column("FirstName")]
         public string firstName { get; set; } = null!;
 
         [Required]
-        [Column("lastName")]
+        [Column("LastName")]
         public string lastName { get; set; } = null!;
 
         [Required]
-        [Column("email")]
+        [Column("Email")]
         public string email { get; set; } = null!;
 
         [Required]
-        [Column("phoneNumber")]
+        [Column("PhoneNumber")]
         public string phoneNumber { get; set; } = null!;
+
+        [Required]
+        [Column("Role")]
+        [MaxLength(50)]
+        public string role { get; set; } = null!;
+
+        [Required]
+        [Column("HireDate")]
+        public DateTime hireDate { get; set; }
+
+        [Required]
+        [Column("Password")]
+        public string Password { get; set; } = null!;
 
         [ForeignKey(nameof(registrationNumber))]
         public Business Business { get; set; } = null!;
 
-        public ICollection<ProductStaff> serviceAssignments { get; set; } = new List<ProductStaff>();
+        public ICollection<ServiceStaff> serviceAssignments { get; set; }
+            = new List<ServiceStaff>();
     }
 }

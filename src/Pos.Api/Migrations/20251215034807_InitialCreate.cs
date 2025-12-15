@@ -24,9 +24,10 @@ namespace Pos.Api.Migrations
                     VatCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Phone = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    CurrencyCode = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false)
+                    Phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    CurrencyCode = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,19 +95,36 @@ namespace Pos.Api.Migrations
                 schema: "point_of_sale",
                 columns: table => new
                 {
-                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RegistrationNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    BasePrice = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
-                    TaxCode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Status = table.Column<bool>(type: "boolean", nullable: false),
-                    DurationMinutes = table.Column<int>(type: "integer", nullable: false)
+                    productId = table.Column<Guid>(type: "uuid", nullable: false),
+                    registrationNumber = table.Column<string>(type: "text", nullable: false),
+                    type = table.Column<int>(type: "integer", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: false),
+                    basePrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    taxCode = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<bool>(type: "boolean", nullable: false),
+                    durationMinutes = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.ProductId);
+                    table.PrimaryKey("PK_Products", x => x.productId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductStaff",
+                schema: "point_of_sale",
+                columns: table => new
+                {
+                    productStaffId = table.Column<Guid>(type: "uuid", nullable: false),
+                    productId = table.Column<Guid>(type: "uuid", nullable: false),
+                    staffId = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<bool>(type: "boolean", nullable: false),
+                    valideFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    valideTo = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductStaff", x => x.productStaffId);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,6 +146,26 @@ namespace Pos.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_reservations", x => x.appointmentId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Services",
+                schema: "point_of_sale",
+                columns: table => new
+                {
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RegistrationNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    BasePrice = table.Column<decimal>(type: "numeric(12,2)", nullable: false),
+                    TaxCode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Status = table.Column<bool>(type: "boolean", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,7 +195,10 @@ namespace Pos.Api.Migrations
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    PhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    HireDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,8 +221,8 @@ namespace Pos.Api.Migrations
                     orderId = table.Column<Guid>(type: "uuid", nullable: false),
                     productId = table.Column<Guid>(type: "uuid", nullable: false),
                     quantity = table.Column<int>(type: "integer", nullable: false),
-                    assignedStaffId = table.Column<Guid>(type: "uuid", nullable: true),
-                    appointmentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    assignedStaffId = table.Column<string>(type: "text", nullable: true),
+                    appointmentId = table.Column<string>(type: "text", nullable: true),
                     notes = table.Column<string>(type: "text", nullable: true),
                     unitPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     subTotal = table.Column<decimal>(type: "numeric", nullable: false)
@@ -199,11 +240,11 @@ namespace Pos.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductStaff",
+                name: "ServiceStaff",
                 schema: "point_of_sale",
                 columns: table => new
                 {
-                    ProductStaffId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ServiceStaffId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     StaffId = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<bool>(type: "boolean", nullable: false),
@@ -212,16 +253,16 @@ namespace Pos.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductStaff", x => x.ProductStaffId);
+                    table.PrimaryKey("PK_ServiceStaff", x => x.ServiceStaffId);
                     table.ForeignKey(
-                        name: "FK_ProductStaff_Products_ProductId",
+                        name: "FK_ServiceStaff_Services_ProductId",
                         column: x => x.ProductId,
                         principalSchema: "point_of_sale",
-                        principalTable: "Products",
+                        principalTable: "Services",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProductStaff_Staff_StaffId",
+                        name: "FK_ServiceStaff_Staff_StaffId",
                         column: x => x.StaffId,
                         principalSchema: "point_of_sale",
                         principalTable: "Staff",
@@ -236,16 +277,16 @@ namespace Pos.Api.Migrations
                 column: "orderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductStaff_ProductId_StaffId",
+                name: "IX_ServiceStaff_ProductId_StaffId",
                 schema: "point_of_sale",
-                table: "ProductStaff",
+                table: "ServiceStaff",
                 columns: new[] { "ProductId", "StaffId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductStaff_StaffId",
+                name: "IX_ServiceStaff_StaffId",
                 schema: "point_of_sale",
-                table: "ProductStaff",
+                table: "ServiceStaff",
                 column: "StaffId");
 
             migrationBuilder.CreateIndex(
@@ -278,11 +319,19 @@ namespace Pos.Api.Migrations
                 schema: "point_of_sale");
 
             migrationBuilder.DropTable(
+                name: "Products",
+                schema: "point_of_sale");
+
+            migrationBuilder.DropTable(
                 name: "ProductStaff",
                 schema: "point_of_sale");
 
             migrationBuilder.DropTable(
                 name: "reservations",
+                schema: "point_of_sale");
+
+            migrationBuilder.DropTable(
+                name: "ServiceStaff",
                 schema: "point_of_sale");
 
             migrationBuilder.DropTable(
@@ -294,7 +343,7 @@ namespace Pos.Api.Migrations
                 schema: "point_of_sale");
 
             migrationBuilder.DropTable(
-                name: "Products",
+                name: "Services",
                 schema: "point_of_sale");
 
             migrationBuilder.DropTable(

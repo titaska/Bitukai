@@ -30,7 +30,8 @@ namespace Pos.Api.BusinessStaff.Services
                     Location = b.Location,
                     Phone = b.Phone,
                     Email = b.Email,
-                    CurrencyCode = b.CurrencyCode
+                    CurrencyCode = b.CurrencyCode,
+                    Type = b.Type
                 })
                 .ToListAsync();
         }
@@ -48,7 +49,8 @@ namespace Pos.Api.BusinessStaff.Services
                 Location = b.Location,
                 Phone = b.Phone,
                 Email = b.Email,
-                CurrencyCode = b.CurrencyCode
+                CurrencyCode = b.CurrencyCode,
+                Type = b.Type
             };
         }
 
@@ -62,7 +64,8 @@ namespace Pos.Api.BusinessStaff.Services
                 Location = dto.Location,
                 Phone = dto.Phone,
                 Email = dto.Email,
-                CurrencyCode = dto.CurrencyCode
+                CurrencyCode = dto.CurrencyCode,
+                Type = dto.Type
             };
 
             _context.Businesses.Add(entity);
@@ -83,6 +86,7 @@ namespace Pos.Api.BusinessStaff.Services
             entity.Phone = dto.Phone;
             entity.Email = dto.Email;
             entity.CurrencyCode = dto.CurrencyCode;
+            entity.Type = dto.Type;
 
             await _context.SaveChangesAsync();
             return true;

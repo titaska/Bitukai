@@ -34,12 +34,36 @@ namespace Pos.Api.BusinessStaff.Services
                 firstName = dto.FirstName,
                 lastName = dto.LastName,
                 email = dto.Email,
-                phoneNumber = dto.PhoneNumber
+                phoneNumber = dto.PhoneNumber,
+                role = dto.Role,
+                hireDate = dto.HireDate,
+                Password = dto.Password 
             };
 
             _db.Staff.Add(entity);
             await _db.SaveChangesAsync();
             return ToDto(entity);
+        }
+        
+        public async Task<StaffDto?> AuthenticateAsync(string email, string password)
+        {
+            var staff = await _db.Staff.FirstOrDefaultAsync(s => s.email == email);
+            if (staff == null) return null;
+            
+            if (staff.Password != password) return null;
+            
+            return new StaffDto
+            {
+                StaffId = staff.staffId,
+                RegistrationNumber = staff.registrationNumber,
+                Status = staff.status,
+                FirstName = staff.firstName,
+                LastName = staff.lastName,
+                Email = staff.email,
+                PhoneNumber = staff.phoneNumber,
+                Role = staff.role,
+                HireDate = staff.hireDate
+            };
         }
 
         public async Task<StaffDto?> Update(int staffId, StaffUpdateDto dto)
@@ -52,6 +76,9 @@ namespace Pos.Api.BusinessStaff.Services
             entity.lastName = dto.LastName;
             entity.email = dto.Email;
             entity.phoneNumber = dto.PhoneNumber;
+            entity.role = dto.Role;
+            entity.Password = dto.Password; 
+            
 
             await _db.SaveChangesAsync();
             return ToDto(entity);
@@ -76,7 +103,10 @@ namespace Pos.Api.BusinessStaff.Services
                 FirstName = s.firstName,
                 LastName = s.lastName,
                 Email = s.email,
-                PhoneNumber = s.phoneNumber
+                PhoneNumber = s.phoneNumber,
+                Role = s.role,
+                HireDate = s.hireDate,
+                Password = s.Password 
             };
     }
 }

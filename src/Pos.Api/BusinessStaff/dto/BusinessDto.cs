@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pos.Api.BusinessStaff.Models;
+
 
 namespace Pos.Api.BusinessStaff.dto
 {
@@ -14,5 +16,7 @@ namespace Pos.Api.BusinessStaff.dto
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string CurrencyCode { get; set; } = null!;
+        
+        public BusinessType Type { get; set; }
     }
 }

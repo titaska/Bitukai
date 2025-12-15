@@ -3,10 +3,10 @@ using Pos.Api.BusinessStaff.Models;
 
 namespace Pos.Api.BusinessStaff.dto
 {
-    public class ProductStaffDto
+    public class ServiceStaffDto
     {
-        public Guid ProductStaffId { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid ServiceStaffId { get; set; }
+        public Guid ServiceId { get; set; }
         public int StaffId { get; set; }
         public bool Status { get; set; }
         public DateTime? ValideFrom { get; set; }
