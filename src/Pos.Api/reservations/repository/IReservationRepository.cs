@@ -9,9 +9,9 @@ namespace Pos.Api.reservations.repository
         Task CreateAsync(Reservation reservation);
         Task UpdateAsync(Reservation reservation);
         Task DeleteAsync(Reservation reservation);
-        Task<bool> EmployeeIsBusy(int employeeId, DateTime start, int durationMinutes);
+        Task<bool> EmployeeIsBusy(Guid employeeId, DateTime start, int durationMinutes);
 
-        Task<List<DateTime>> GetTakenSlotsAsync(int employeeId, DateTime date);
+        Task<List<DateTime>> GetTakenSlotsAsync(Guid employeeId, DateTime date);
 
     }
 }

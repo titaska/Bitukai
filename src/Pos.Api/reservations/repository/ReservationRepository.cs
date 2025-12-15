@@ -37,7 +37,7 @@ namespace Pos.Api.reservations.repository
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<DateTime>> GetTakenSlotsAsync(int employeeId, DateTime date)
+        public async Task<List<DateTime>> GetTakenSlotsAsync(Guid employeeId, DateTime date)
         {
             // Force UTC
             var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
@@ -58,7 +58,7 @@ namespace Pos.Api.reservations.repository
 
 
 
-        public async Task<bool> EmployeeIsBusy(int employeeId, DateTime start, int durationMinutes)
+        public async Task<bool> EmployeeIsBusy(Guid employeeId, DateTime start, int durationMinutes)
         {
             var end = start.AddMinutes(durationMinutes);
 

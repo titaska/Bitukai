@@ -1,7 +1,7 @@
 public class ReservationCreateDto
 {
     public string RegistrationNumber { get; set; } = null!;
-    public int EmployeeId { get; set; } 
+    public Guid EmployeeId { get; set; } 
     public string ServiceProductId { get; set; } = null!;
     public DateTime StartTime { get; set; }
     public int DurationMinutes { get; set; }

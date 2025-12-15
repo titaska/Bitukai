@@ -72,7 +72,7 @@ namespace Pos.Api.reservations.service
             await _repo.DeleteAsync(r);
         }
 
-        public async Task<List<DateTime>> GetTakenSlotsAsync(int employeeId, DateTime date)
+        public async Task<List<DateTime>> GetTakenSlotsAsync(Guid employeeId, DateTime date)
         {
             return await _repo.GetTakenSlotsAsync(employeeId, date.Date);
         }

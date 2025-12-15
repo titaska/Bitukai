@@ -22,7 +22,7 @@ namespace Pos.Api.reservations.controller
 
         [HttpGet("availability")]
         public async Task<IActionResult> GetAvailability(
-        [FromQuery] int employeeId,
+        [FromQuery] Guid employeeId,
         [FromQuery] DateTime date)
         {
             var utcDate = DateTime.SpecifyKind(date, DateTimeKind.Utc);
