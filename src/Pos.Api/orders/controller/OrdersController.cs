@@ -175,4 +175,16 @@ public class OrdersController : ControllerBase
 
         return Ok(closedOrder);
     }
+    
+    // POST /orders/{orderId}/close
+    [HttpPost("{orderId}/calculate")]
+    public async Task<IActionResult> CalculateOrder(string orderId)
+    {
+        if (!Guid.TryParse(orderId, out var orderGuid))
+            return BadRequest("Invalid orderId");
+
+        var calculatedOrder = await _orderService.CalculateOrderAsync(orderGuid);
+
+        return Ok(calculatedOrder);
+    }
 }

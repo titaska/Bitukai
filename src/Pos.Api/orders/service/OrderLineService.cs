@@ -118,49 +118,64 @@ public class OrderLineService : IOrderLineService
 
     public async Task<decimal> CreateOrderLineTaxAsync(Guid orderLineId)
     {
-        
+        // Get the order line
         var orderLine = await _context.OrderLines
             .FirstOrDefaultAsync(ol => ol.orderLineId == orderLineId);
 
         if (orderLine == null)
             throw new KeyNotFoundException("OrderLine not found");
 
-        
+        // Get the product
         var product = await _context.Products
             .FirstOrDefaultAsync(p => p.productId == orderLine.productId);
 
         if (product == null)
             throw new KeyNotFoundException("Product not found");
 
-        
+        // Get the tax
         var tax = await _context.Taxes
             .FirstOrDefaultAsync(t => t.id == product.taxCode);
 
-        
         if (tax == null || tax.percentage <= 0)
             return 0m;
 
-        
+        // Calculate tax amount
         var taxAmount = Math.Round(
             orderLine.subTotal * (tax.percentage / 100m),
             2,
             MidpointRounding.AwayFromZero
         );
 
-        
-        var orderLineTax = new OrderLineTax
-        {
-            orderLineTaxId = Guid.NewGuid(),
-            orderLineId = orderLineId,
-            taxCode = tax.id,
-            taxPercentage = tax.percentage,
-            taxAmount = taxAmount
-        };
+        // Check if OrderLineTax already exists
+        var orderLineTax = await _context.OrderLineTaxes
+            .FirstOrDefaultAsync(olt => olt.orderLineId == orderLineId);
 
-        _context.OrderLineTaxes.Add(orderLineTax);
+        if (orderLineTax != null)
+        {
+            // Update existing record
+            orderLineTax.taxCode = tax.id;
+            orderLineTax.taxPercentage = tax.percentage;
+            orderLineTax.taxAmount = taxAmount;
+
+            _context.OrderLineTaxes.Update(orderLineTax);
+        }
+        else
+        {
+            // Create new record
+            orderLineTax = new OrderLineTax
+            {
+                orderLineTaxId = Guid.NewGuid(),
+                orderLineId = orderLineId,
+                taxCode = tax.id,
+                taxPercentage = tax.percentage,
+                taxAmount = taxAmount
+            };
+
+            _context.OrderLineTaxes.Add(orderLineTax);
+        }
+
         await _context.SaveChangesAsync();
 
-        
         return taxAmount;
     }
 

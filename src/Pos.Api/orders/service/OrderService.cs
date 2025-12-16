@@ -24,6 +24,7 @@ public interface IOrderService
     Task<OrderDto?> UpdateOrderAsync(Guid orderId, OrderUpdateDto input);
 
     Task<OrderDto> CloseOrderAsync(Guid orderId);
+    Task<OrderDto> CalculateOrderAsync(Guid orderId);
 }
 
 public class OrderService : IOrderService
@@ -247,6 +248,67 @@ public class OrderService : IOrderService
         return orderDto;
     }
 
+    public async Task<OrderDto> CalculateOrderAsync(Guid orderId)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Lines)
+            .FirstOrDefaultAsync(o => o.orderId == orderId);
+
+        if (order == null)
+            throw new KeyNotFoundException("Order not found");
+
+        decimal subtotal = order.Lines.Sum(l => l.subTotal);
+
+        decimal totalTax = 0m;
+        foreach (var line in order.Lines)
+        {
+            totalTax += await _orderLineService.CreateOrderLineTaxAsync(line.orderLineId);
+        }
+
+        decimal serviceChargeAmount = 0m;
+        if (order.serviceChargePct > 0)
+        {
+            serviceChargeAmount = Math.Round(
+                subtotal * (order.serviceChargePct / 100m),
+                2,
+                MidpointRounding.AwayFromZero
+            );
+        }
+
+        decimal totalDue = subtotal + totalTax + serviceChargeAmount;
+        
+        order.subtotalAmount = subtotal;
+        order.taxAmount = totalTax;
+        order.serviceChargeAmount = serviceChargeAmount;
+        order.totalDue = totalDue;
+
+        await _context.SaveChangesAsync();
+
+        return new OrderDto
+        {
+            orderId = order.orderId,
+            registrationNumber = order.registrationNumber,
+            customerId = order.customerId,
+            status = order.status,
+            createdAt = order.createdAt,
+            closedAt = order.closedAt,
+            serviceChargePct = order.serviceChargePct,
+            tipAmount = order.tipAmount,
+            subtotalAmount = order.subtotalAmount,
+            taxAmount = order.taxAmount,
+            serviceChargeAmount = order.serviceChargeAmount,
+            totalDue = order.totalDue,
+            lines = order.Lines.Select(l => new OrderLineDto
+            {
+                orderLineId = l.orderLineId,
+                productId = l.productId,
+                quantity = l.quantity,
+                unitPrice = l.unitPrice,
+                subTotal = l.subTotal
+            }).ToList()
+        };
+    }
+
     public async Task<OrderDto> CloseOrderAsync(Guid orderId)
     {
         var order = await _context.Orders
@@ -259,38 +321,11 @@ public class OrderService : IOrderService
         if (order.status == OrderStatus.CLOSED_PAID)
             throw new InvalidOperationException("Order is already closed");
         
-        decimal subtotal = order.Lines.Sum(l => l.subTotal);
-        
-        decimal totalTax = 0m;
-        foreach (var line in order.Lines)
-        {
-            totalTax += await _orderLineService.CreateOrderLineTaxAsync(line.orderLineId);
-        }
-        
-        decimal serviceChargeAmount = 0m;
-        if (order.serviceChargePct > 0)
-        {
-            serviceChargeAmount = Math.Round(
-                subtotal * (order.serviceChargePct / 100m),
-                2,
-                MidpointRounding.AwayFromZero
-            );
-        }
-
-        decimal totalDue =
-            subtotal +
-            totalTax +
-            serviceChargeAmount;
-        
-        order.subtotalAmount = subtotal;
-        order.taxAmount = totalTax;
-        order.serviceChargeAmount = serviceChargeAmount;
-        order.totalDue = totalDue;
         order.status = OrderStatus.CLOSED_PAID;
         order.closedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
-        
+
         return new OrderDto
         {
             orderId = order.orderId,
