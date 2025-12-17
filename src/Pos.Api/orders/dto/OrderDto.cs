@@ -9,7 +9,7 @@ public class OrderDto
     public Guid? customerId { get; set; }
     public OrderStatus status { get; set; }
     public DateTime createdAt { get; set; }
-    public DateTime? closeddAt { get; set; }
+    public DateTime? closedAt { get; set; }
     public decimal? serviceChargePct { get; set; }
     public decimal? tipAmount { get; set; }
     public decimal? subtotalAmount { get; set; }
@@ -19,5 +19,5 @@ public class OrderDto
     public decimal? totalDue { get; set; }
 
     public List<OrderLineDto> lines { get; set; } = new List<OrderLineDto>();
-    //payment list
+
 }
