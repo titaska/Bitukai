@@ -5,7 +5,7 @@ using Pos.Api.Products.service;
 using Pos.Api.Products.dto;
 
 [ApiController]
-[Route("products")]
+[Route("api/products")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;

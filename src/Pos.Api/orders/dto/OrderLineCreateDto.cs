@@ -7,5 +7,7 @@ public class OrderLineCreateDto
     public string? assignedStaffId { get; set; }
     public string? appointmentId { get; set; }
     public string? notes { get; set; }
-    //public List<OrderLineOptionDto> options { get; set; }
+    
+    public decimal unitPrice  { get; set; }
+
 }

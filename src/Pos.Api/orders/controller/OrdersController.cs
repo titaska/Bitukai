@@ -5,7 +5,7 @@ using Pos.Api.Orders.Model;
 using Pos.Api.orders.service;
 
 [ApiController]
-[Route("orders")]
+[Route("api/orders")]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -164,24 +164,27 @@ public class OrdersController : ControllerBase
         }
     }
 
-    // PUT /orders/{orderId}/tip
-    [HttpPut("{orderId}/tip")]
-    public async Task<IActionResult> UpdateTip(string orderId)
-    {
-        return Ok();
-    }
-
-    // POST /orders/{orderId}/discounts
-    [HttpPost("{orderId}/discounts")]
-    public async Task<IActionResult> ApplyDiscount(string orderId, [FromBody] OrderDiscountCreateDto dto)
-    {
-        return Ok();
-    }
-
     // POST /orders/{orderId}/close
     [HttpPost("{orderId}/close")]
     public async Task<IActionResult> CloseOrder(string orderId)
     {
-        return Ok();
+        if (!Guid.TryParse(orderId, out var orderGuid))
+            return BadRequest("Invalid orderId");
+
+        var closedOrder = await _orderService.CloseOrderAsync(orderGuid);
+
+        return Ok(closedOrder);
+    }
+    
+    // POST /orders/{orderId}/close
+    [HttpPost("{orderId}/calculate")]
+    public async Task<IActionResult> CalculateOrder(string orderId)
+    {
+        if (!Guid.TryParse(orderId, out var orderGuid))
+            return BadRequest("Invalid orderId");
+
+        var calculatedOrder = await _orderService.CalculateOrderAsync(orderGuid);
+
+        return Ok(calculatedOrder);
     }
 }
