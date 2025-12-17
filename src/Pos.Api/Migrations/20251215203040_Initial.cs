@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -118,7 +118,7 @@ namespace Pos.Api.Migrations
                     registrationNumber = table.Column<string>(type: "text", nullable: false),
                     customerId = table.Column<string>(type: "text", nullable: false),
                     serviceProductId = table.Column<string>(type: "text", nullable: false),
-                    employeeId = table.Column<string>(type: "text", nullable: false),
+                    employeeId = table.Column<string>(type: "uuid", nullable: false),
                     startTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     durationMinutes = table.Column<int>(type: "integer", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),

@@ -37,7 +37,28 @@ namespace Pos.Api.reservations.repository
             await _db.SaveChangesAsync();
         }
 
-        public async Task<bool> EmployeeIsBusy(string employeeId, DateTime start, int durationMinutes)
+        public async Task<List<DateTime>> GetTakenSlotsAsync(Guid employeeId, DateTime date)
+        {
+            // Force UTC
+            var utcDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
+            var startOfDay = utcDate;
+            var endOfDay = utcDate.AddDays(1);
+
+            return await _db.Reservations
+                .Where(r =>
+                    r.EmployeeId == employeeId &&
+                    r.StartTime >= startOfDay &&
+                    r.StartTime < endOfDay &&
+                    r.Status != "Cancelled"
+                )
+                .Select(r => r.StartTime)
+                .ToListAsync();
+        }
+
+
+
+        public async Task<bool> EmployeeIsBusy(Guid employeeId, DateTime start, int durationMinutes)
         {
             var end = start.AddMinutes(durationMinutes);
 
