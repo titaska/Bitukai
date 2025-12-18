@@ -1,6 +1,7 @@
 ﻿using Pos.Api.Context;
 using Pos.Api.taxes.dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Pos.Api.taxes.model;
 
 namespace Pos.Api.taxes.service;
@@ -14,15 +15,18 @@ public interface IServiceChargeConfigService
 public class ServiceChargeConfigService : IServiceChargeConfigService
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<ServiceChargeConfigService> _logger;
 
-    public ServiceChargeConfigService(AppDbContext context)
+    public ServiceChargeConfigService(AppDbContext context, ILogger<ServiceChargeConfigService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<List<ServiceChargeConfigDto>> GetAllAsync()
     {
-        return await _context.ServiceChargeConfigs
+        _logger.LogInformation("Fetching all service charge configs from database");
+        var configs = await _context.ServiceChargeConfigs
             .Select(s => new ServiceChargeConfigDto
             {
                 ServiceChargeConfigId = s.serviceChargeConfigId,
@@ -32,10 +36,15 @@ public class ServiceChargeConfigService : IServiceChargeConfigService
                 ValidTo = s.validTo
             })
             .ToListAsync();
+        
+        _logger.LogInformation("Fetched {Count} service charge configs", configs.Count);
+        return configs;
     }
 
     public async Task<ServiceChargeConfigDto> CreateAsync(ServiceChargeConfigCreateDto dto)
     {
+        _logger.LogInformation("Creating new service charge config: {@Dto}", dto);
+
         var entity = new ServiceChargeConfig
         {
             serviceChargeConfigId = Guid.NewGuid(),
@@ -47,6 +56,8 @@ public class ServiceChargeConfigService : IServiceChargeConfigService
 
         _context.ServiceChargeConfigs.Add(entity);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Created service charge config with ID {ConfigId}", entity.serviceChargeConfigId);
 
         return new ServiceChargeConfigDto
         {

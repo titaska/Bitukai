@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Pos.Api.reservations.dto;
 using Pos.Api.reservations.model;
 using Pos.Api.reservations.repository;
@@ -7,32 +8,48 @@ namespace Pos.Api.reservations.service
     public class ReservationService
     {
         private readonly IReservationRepository _repo;
+        private readonly ILogger<ReservationService> _logger;
 
-        public ReservationService(IReservationRepository repo)
+        public ReservationService(IReservationRepository repo, ILogger<ReservationService> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
         public async Task<List<ReservationDto>> GetAllAsync()
         {
+            _logger.LogInformation("Fetching all reservations from repository");
             var list = await _repo.GetAllAsync();
+            _logger.LogInformation("Fetched {Count} reservations", list.Count);
             return list.Select(MapToDto).ToList();
         }
 
         public async Task<ReservationDto?> GetByIdAsync(string id)
         {
+            _logger.LogInformation("Fetching reservation with ID {ReservationId}", id);
             var r = await _repo.GetByIdAsync(id);
-            return r == null ? null : MapToDto(r);
+
+            if (r == null)
+            {
+                _logger.LogWarning("Reservation not found: {ReservationId}", id);
+                return null;
+            }
+
+            _logger.LogInformation("Found reservation {ReservationId}", id);
+            return MapToDto(r);
         }
 
         public async Task<ReservationDto> CreateAsync(ReservationCreateDto dto)
         {
-            // Prevent overlapping appointments
-            bool busy = await _repo.EmployeeIsBusy(
-                dto.EmployeeId, dto.StartTime, dto.DurationMinutes);
+            _logger.LogInformation("Creating reservation for employee {EmployeeId} at {StartTime}", dto.EmployeeId, dto.StartTime);
 
+            // Prevent overlapping appointments
+            bool busy = await _repo.EmployeeIsBusy(dto.EmployeeId, dto.StartTime, dto.DurationMinutes);
             if (busy)
+            {
+                _logger.LogWarning("Cannot create reservation: employee {EmployeeId} is busy at {StartTime}", dto.EmployeeId, dto.StartTime);
                 throw new Exception("Employee is already booked for that time.");
+            }
 
             var reservation = new Reservation
             {
@@ -44,57 +61,62 @@ namespace Pos.Api.reservations.service
                 DurationMinutes = dto.DurationMinutes,
                 Status = "BOOKED",
                 Notes = dto.Notes,
-
                 ClientName = dto.ClientName,
                 ClientSurname = dto.ClientSurname,
                 ClientPhone = dto.ClientPhone
             };
 
-
             await _repo.CreateAsync(reservation);
+            _logger.LogInformation("Created reservation {ReservationId} for employee {EmployeeId}", reservation.AppointmentId, dto.EmployeeId);
             return MapToDto(reservation);
         }
 
         public async Task UpdateStatusAsync(string id, string status)
         {
-            var r = await _repo.GetByIdAsync(id)
-                ?? throw new Exception("Reservation not found");
+            _logger.LogInformation("Updating status of reservation {ReservationId} to {Status}", id, status);
+
+            var r = await _repo.GetByIdAsync(id) ?? throw new Exception("Reservation not found");
 
             r.Status = status;
             await _repo.UpdateAsync(r);
+
+            _logger.LogInformation("Updated status of reservation {ReservationId} to {Status}", id, status);
         }
 
         public async Task DeleteAsync(string id)
         {
-            var r = await _repo.GetByIdAsync(id)
-                ?? throw new Exception("Reservation not found");
+            _logger.LogInformation("Deleting reservation {ReservationId}", id);
+
+            var r = await _repo.GetByIdAsync(id) ?? throw new Exception("Reservation not found");
 
             await _repo.DeleteAsync(r);
+
+            _logger.LogInformation("Deleted reservation {ReservationId}", id);
         }
 
         public async Task<List<DateTime>> GetTakenSlotsAsync(Guid employeeId, DateTime date)
         {
-            return await _repo.GetTakenSlotsAsync(employeeId, date.Date);
+            _logger.LogInformation("Fetching taken slots for employee {EmployeeId} on {Date}", employeeId, date);
+            var slots = await _repo.GetTakenSlotsAsync(employeeId, date.Date);
+            _logger.LogInformation("Found {Count} taken slots for employee {EmployeeId} on {Date}", slots.Count, employeeId, date);
+            return slots;
         }
 
-
         private ReservationDto MapToDto(Reservation r) =>
-        new ReservationDto
-        {
-        AppointmentId = r.AppointmentId,
-        RegistrationNumber = r.RegistrationNumber,
-        ServiceProductId = r.ServiceProductId,
-        EmployeeId = r.EmployeeId,
-        StartTime = r.StartTime,
-        DurationMinutes = r.DurationMinutes,
-        Status = r.Status,
-        OrderId = r.OrderId,
-        Notes = r.Notes,
-
-        ClientName = r.ClientName,
-        ClientSurname = r.ClientSurname,
-        ClientPhone = r.ClientPhone
-        };
-
+            new ReservationDto
+            {
+                AppointmentId = r.AppointmentId,
+                RegistrationNumber = r.RegistrationNumber,
+                ServiceProductId = r.ServiceProductId,
+                EmployeeId = r.EmployeeId,
+                StartTime = r.StartTime,
+                DurationMinutes = r.DurationMinutes,
+                Status = r.Status,
+                OrderId = r.OrderId,
+                Notes = r.Notes,
+                ClientName = r.ClientName,
+                ClientSurname = r.ClientSurname,
+                ClientPhone = r.ClientPhone
+            };
     }
 }
