@@ -42,6 +42,7 @@ builder.Services.AddScoped<TaxService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
+builder.Services.AddScoped<IServiceChargeConfigService, ServiceChargeConfigService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>

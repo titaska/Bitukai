@@ -9,10 +9,12 @@ namespace Pos.Api.taxes.controller
     public class TaxesController : ControllerBase
     {
         private readonly TaxService _service;
+        private readonly IServiceChargeConfigService _serviceChargeConfigService;
 
-        public TaxesController(TaxService service)
+        public TaxesController(TaxService service,  IServiceChargeConfigService serviceChargeConfigService)
         {
             _service = service;
+            _serviceChargeConfigService = serviceChargeConfigService;
         }
         
         [HttpGet]
@@ -45,6 +47,23 @@ namespace Pos.Api.taxes.controller
         {
             await _service.DeleteAsync(id);
             return NoContent();
+        }
+        
+        [HttpGet("service-charges")]
+        public async Task<IActionResult> GetServiceCharges()
+        {
+            var serviceCharges = await _serviceChargeConfigService.GetAllAsync();
+            return Ok(serviceCharges);
+        }
+        
+        [HttpPost("service-charges")]
+        public async Task<IActionResult> CreateServiceCharge([FromBody] ServiceChargeConfigCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _serviceChargeConfigService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetServiceCharges), new { id = created.ServiceChargeConfigId }, created);
         }
     }
 }
