@@ -11,6 +11,7 @@ using Pos.Api.BusinessStaff.Services;
 using Pos.Api.taxes.repository;
 using Pos.Api.taxes.service;
 using Pos.Api.Products.service;
+using Pos.Api.reservations.services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -42,6 +43,7 @@ builder.Services.AddScoped<TaxService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
+builder.Services.AddHostedService<ReservationStatusUpdaterService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
