@@ -51,6 +51,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "point_of_sale");
     }));
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
