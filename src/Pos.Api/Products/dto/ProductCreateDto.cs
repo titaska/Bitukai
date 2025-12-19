@@ -1,12 +1,14 @@
 ﻿namespace Pos.Api.Products.dto;
 using Pos.Api.Products.model;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class ProductCreateDto
 {
     [Required]
     public string registrationNumber { get; set; }
     [Required]
+    [JsonPropertyName("type")]
     public ProductType productType { get; set; }
     [Required]
     public string name { get; set; }
