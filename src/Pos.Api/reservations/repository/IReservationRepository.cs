@@ -5,6 +5,7 @@ namespace Pos.Api.reservations.repository
     public interface IReservationRepository
     {
         Task<List<Reservation>> GetAllAsync();
+        Task<List<ReservationWithDetails>> GetAllWithDetailsAsync();
         Task<Reservation?> GetByIdAsync(string id);
         Task CreateAsync(Reservation reservation);
         Task UpdateAsync(Reservation reservation);

@@ -9,17 +9,12 @@ namespace Pos.Api.reservations.controller
     public class ReservationController : ControllerBase
     {
         private readonly ReservationService _service;
-
-     
-
+        
         public ReservationController(ReservationService service)
         {
             _service = service;
         }
-
-
-
-
+        
         [HttpGet("availability")]
         public async Task<IActionResult> GetAvailability(
         [FromQuery] Guid employeeId,
@@ -29,11 +24,14 @@ namespace Pos.Api.reservations.controller
             var takenSlots = await _service.GetTakenSlotsAsync(employeeId, utcDate);
             return Ok(takenSlots);
         }
-
-
+        
         [HttpGet]
         public async Task<IActionResult> GetAll() =>
             Ok(await _service.GetAllAsync());
+        
+        [HttpGet("details")]
+        public async Task<IActionResult> GetAllWithDetails() =>
+            Ok(await _service.GetAllWithDetailsAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -53,6 +51,13 @@ namespace Pos.Api.reservations.controller
         public async Task<IActionResult> UpdateStatus(string id, [FromQuery] string status)
         {
             await _service.UpdateStatusAsync(id, status);
+            return NoContent();
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] ReservationCreateDto dto)
+        {
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 
