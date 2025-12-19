@@ -25,6 +25,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Business> Businesses { get; set; } = null!;
     public DbSet<Staff> Staff { get; set; } = null!;
+    public DbSet<ServiceChargeConfig> ServiceChargeConfigs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

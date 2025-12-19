@@ -44,6 +44,7 @@ builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductStaffService, ProductStaffService>();
 builder.Services.AddHostedService<ReservationStatusUpdaterService>();
+builder.Services.AddScoped<IServiceChargeConfigService, ServiceChargeConfigService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -51,6 +52,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "point_of_sale");
     }));
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 var app = builder.Build();
 
