@@ -24,6 +24,12 @@ namespace Pos.Api.reservations.service
             return list.Select(MapToDto).ToList();
         }
 
+        public async Task<List<ReservationWithDetailsDto>> GetAllWithDetailsAsync()
+        {
+            var list = await _repo.GetAllWithDetailsAsync();
+            return list.Select(MapToDto).ToList();
+        }
+
         public async Task<ReservationDto?> GetByIdAsync(string id)
         {
             _logger.LogInformation("Fetching reservation with ID {ReservationId}", id);
@@ -83,6 +89,31 @@ namespace Pos.Api.reservations.service
             _logger.LogInformation("Updated status of reservation {ReservationId} to {Status}", id, status);
         }
 
+        public async Task UpdateAsync(string id, ReservationCreateDto dto)
+        {
+            bool busy = await _repo.EmployeeIsBusy(
+                dto.EmployeeId, dto.StartTime, dto.DurationMinutes);
+
+            if (busy)
+                throw new Exception("Employee is already booked for that time.");
+
+            var reservation = await _repo.GetByIdAsync(id);
+            if (reservation == null)
+                throw new Exception("Reservation not found");
+            
+            reservation.RegistrationNumber = dto.RegistrationNumber;
+            reservation.EmployeeId = dto.EmployeeId;
+            reservation.ServiceProductId = dto.ServiceProductId;
+            reservation.StartTime = dto.StartTime;
+            reservation.DurationMinutes = dto.DurationMinutes;
+            reservation.ClientName = dto.ClientName;
+            reservation.ClientSurname = dto.ClientSurname;
+            reservation.ClientPhone = dto.ClientPhone;
+            reservation.Notes = dto.Notes;
+            
+            await _repo.UpdateAsync(reservation);
+        }
+
         public async Task DeleteAsync(string id)
         {
             _logger.LogInformation("Deleting reservation {ReservationId}", id);
@@ -103,10 +134,31 @@ namespace Pos.Api.reservations.service
         }
 
         private ReservationDto MapToDto(Reservation r) =>
-            new ReservationDto
+        new ReservationDto
+        {
+        AppointmentId = r.AppointmentId,
+        RegistrationNumber = r.RegistrationNumber,
+        ServiceProductId = r.ServiceProductId,
+        EmployeeId = r.EmployeeId,
+        StartTime = r.StartTime,
+        DurationMinutes = r.DurationMinutes,
+        Status = r.Status,
+        OrderId = r.OrderId,
+        Notes = r.Notes,
+
+        ClientName = r.ClientName,
+        ClientSurname = r.ClientSurname,
+        ClientPhone = r.ClientPhone
+        };
+
+        private ReservationWithDetailsDto MapToDto(ReservationWithDetails r) =>
+            new ReservationWithDetailsDto
             {
                 AppointmentId = r.AppointmentId,
                 RegistrationNumber = r.RegistrationNumber,
+                ClientName = r.ClientName,
+                ClientSurname = r.ClientSurname,
+                ClientPhone = r.ClientPhone,
                 ServiceProductId = r.ServiceProductId,
                 EmployeeId = r.EmployeeId,
                 StartTime = r.StartTime,
@@ -114,9 +166,10 @@ namespace Pos.Api.reservations.service
                 Status = r.Status,
                 OrderId = r.OrderId,
                 Notes = r.Notes,
-                ClientName = r.ClientName,
-                ClientSurname = r.ClientSurname,
-                ClientPhone = r.ClientPhone
+                ProductName = r.ProductName,
+                StaffName = r.StaffFirstName,
+                StaffSurname = r.StaffLastName
             };
+
     }
 }

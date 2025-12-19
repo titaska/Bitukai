@@ -18,6 +18,9 @@ namespace Pos.Api.reservations.controller
             _logger = logger;
         }
 
+
+
+
         [HttpGet("availability")]
         public async Task<IActionResult> GetAvailability([FromQuery] Guid employeeId, [FromQuery] DateTime date)
         {
@@ -30,6 +33,7 @@ namespace Pos.Api.reservations.controller
             return Ok(takenSlots);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -38,6 +42,10 @@ namespace Pos.Api.reservations.controller
             _logger.LogInformation("Found {Count} reservations", reservations.Count());
             return Ok(reservations);
         }
+        
+        [HttpGet("details")]
+        public async Task<IActionResult> GetAllWithDetails() =>
+            Ok(await _service.GetAllWithDetailsAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -74,6 +82,13 @@ namespace Pos.Api.reservations.controller
             await _service.UpdateStatusAsync(id, status);
 
             _logger.LogInformation("Updated status of reservation {ReservationId}", id);
+            return NoContent();
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] ReservationCreateDto dto)
+        {
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 

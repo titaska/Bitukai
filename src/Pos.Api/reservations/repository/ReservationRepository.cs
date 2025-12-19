@@ -1,4 +1,6 @@
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Pos.Api.BusinessStaff.Models;
 using Pos.Api.Context;
 using Pos.Api.reservations.model;
 
@@ -15,6 +17,35 @@ namespace Pos.Api.reservations.repository
 
         public async Task<List<Reservation>> GetAllAsync() =>
             await _db.Reservations.ToListAsync();
+        
+        public async Task<List<ReservationWithDetails>> GetAllWithDetailsAsync()
+        {
+            var reservations = await _db.Reservations
+                .AsNoTracking()
+                .Where(r => r.Status == "BOOKED")
+                .ToListAsync();
+            var products = await _db.Products.AsNoTracking().ToDictionaryAsync(p => p.productId.ToString(), p => p.name);
+            var staff = await _db.Staff.AsNoTracking().ToDictionaryAsync(s => s.staffId, s => (s.firstName,s.lastName));
+
+            return reservations.Select(r => new ReservationWithDetails
+            {
+                AppointmentId = r.AppointmentId,
+                RegistrationNumber = r.RegistrationNumber,
+                ClientName = r.ClientName,
+                ClientSurname = r.ClientSurname,
+                ClientPhone = r.ClientPhone,
+                ServiceProductId = r.ServiceProductId,
+                EmployeeId = r.EmployeeId,
+                StartTime = r.StartTime,
+                DurationMinutes = r.DurationMinutes,
+                Status = r.Status,
+                OrderId = r.OrderId,
+                Notes = r.Notes,
+                ProductName = products.TryGetValue(r.ServiceProductId, out var pn) ? pn : null,
+                StaffFirstName = staff.TryGetValue(r.EmployeeId, out var s1) ? s1.firstName : null,
+                StaffLastName = staff.TryGetValue(r.EmployeeId, out var s2) ? s2.lastName : null
+            }).ToList();
+        }
 
         public async Task<Reservation?> GetByIdAsync(string id) =>
             await _db.Reservations.FirstOrDefaultAsync(r => r.AppointmentId == id);
