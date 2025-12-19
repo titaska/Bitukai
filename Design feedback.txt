@@ -1,0 +1,17 @@
+Positive Aspects of the Document
+
+The technical design document clearly explains the main idea of the system and how it should work for both catering and beauty services. The described business processes helped to understand how reservations, orders, and staff interactions should function in real-life scenarios.
+
+The data model is easy to follow. Entities such as Business, Staff, Product, Order, and Reservation are clearly defined, which made database and backend development easier.
+
+The wireframes were useful as a starting point. They gave a general idea of page layout and user flow, which helped during frontend implementation.
+
+
+
+Negative Aspects of the Document
+
+Some parts of the document were incomplete, especially the wireframes. Several features shown in the designs were not explained in detail, so additional decisions had to be made during implementation.
+
+The Customer entity was not practical in real usage. During implementation, it became clear that storing full customer data was unnecessary, so the design had to be adjusted to store only basic client information in reservations. Security and authentication were also not described in enough detail. 
+
+Finally, role-based access control was not clearly defined on a technical level. This caused extra work when deciding which pages and actions should be available to different staff roles.
